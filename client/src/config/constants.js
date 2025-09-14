@@ -1,7 +1,4 @@
 import { swatch, fileIcon, ai, logoShirt, stylishShirt } from "../assets";
-// src/config/constants.js (or wherever you keep EditorTabs)
-
-//import { swatch, fileIcon, ai } from "../assets";
 
 export const EditorTabs = [
   {
@@ -21,37 +18,16 @@ export const EditorTabs = [
     icon: fileIcon,
   },
   {
-    name: "patternpicker",   // ✅ new
-    icon: fileIcon,          // replace with a nice texture/pattern icon later
+    name: "patternpicker",
+    icon: fileIcon,
   },
 ];
 
-// Existing...
 export const FilterTabs = [
   { name: "logoShirt", icon: logoShirt },
   { name: "stylishShirt", icon: stylishShirt },
   { name: "logoLeftShirt", icon: logoShirt },
   { name: "logoRightShirt", icon: logoShirt },
-
-  /* Existing patterns
-  { name: "dotsPattern", icon: "/bigdots.webp" },
-  { name: "stripesPattern", icon: "/stripe.jpg" },
-  { name: "circlesPattern", icon: "/circles.png" },
-  { name: "smallDotsPattern", icon: "/dot.jpg" },
-   
-
-  🆕 New patterns
-  { name: "pattern1", icon: "/new1.png" },
-  { name: "pattern2", icon: "/new2.png" },
-  { name: "pattern3", icon: "/new3.png" },
-  { name: "pattern4", icon: "/new4.png" },
-  { name: "pattern5", icon: "/new5.jpeg" },
-  { name: "pattern6", icon: "/new6.jpeg" },
-  { name: "pattern7", icon: "/new7.jpeg" },
-  { name: "pattern8", icon: "/new8.jpeg" },
-  { name: "pattern9", icon: "/new9.jpeg" },
-  { name: "pattern10", icon: "/new10.jpeg" },
-   */
 ];  
 
 export const DecalTypes = {
@@ -64,7 +40,7 @@ export const DecalTypes = {
   circles: { stateProperty: "circlesDecal", filterTab: "circlesPattern" },
   smallDots: { stateProperty: "smallDotsDecal", filterTab: "smallDotsPattern" },
 
-  // 🆕 New patterns
+  // New patterns
   pattern1: { stateProperty: "pattern1Decal", filterTab: "pattern1" },
   pattern2: { stateProperty: "pattern2Decal", filterTab: "pattern2" },
   pattern3: { stateProperty: "pattern3Decal", filterTab: "pattern3" },
@@ -77,14 +53,12 @@ export const DecalTypes = {
   pattern10: { stateProperty: "pattern10Decal", filterTab: "pattern10" },
 };
 
-
-// Model Categories and Available Models
 export const ModelCategories = [
   {
     id: "tshirts",
     name: "T-Shirts",
     shortTitle: "SHIRT",
-    icon: logoShirt, // Will use shortTitle for now
+    icon: logoShirt,
   },
   {
     id: "jackets",
@@ -160,8 +134,8 @@ export const AvailableModels = {
       id: "tshirt_longsleeve",
       name: "Long Sleeve T-Shirt",
       modelPath: "/t-shirt_-_lengan_panjang.glb",
-      geometryNode: "Sketchfab_model", // Use Sketchfab_model geometry
-      materialNames: ["Back_FRONT_2239", "Collar_FRONT_2229", "Front_FRONT_2234", "Lower_Left_FRONT_2224", "Lower_Right_FRONT_2214", "Upper_Left_FRONT_2219", "Upper_Right_FRONT_2209"], // Use all materials
+      geometryNode: "Sketchfab_model",
+      materialNames: ["Back_FRONT_2239", "Collar_FRONT_2229", "Front_FRONT_2234", "Lower_Left_FRONT_2224", "Lower_Right_FRONT_2214", "Upper_Left_FRONT_2219", "Upper_Right_FRONT_2209"],
       preview: "/threejs.png",
       decalPositions: {
         logo: [0, 0.04, 0.15],
@@ -172,36 +146,25 @@ export const AvailableModels = {
       id: "tshirt_hoodie",
       name: "Hoodie T-Shirt",
       modelPath: "/t_shirt_hoodie_3d_model.glb",
-      geometryNode: "Object_6", // From your logs: "Found geometry in node: Object_6"
+      geometryNode: "Object_6",
       materialName: "Material.001",
       preview: "/threejs.png",
       decalPositions: {
         logo: [0, 0.04, 0.15],
         full: [0, 0, 0]
-      }
-    },
-    // Denim shirt temporarily disabled due to GLTF compatibility issues
-    // {
-    //   id: "denim_shirt",
-    //   name: "Denim Shirt", 
-    //   modelPath: "/unisex_denim_shirt_design.glb",
-    //   geometryNode: "auto",
-    //   materialName: "auto",
-    //   preview: "/threejs.png",
-    //   decalPositions: {
-    //     logo: [0, 0.04, 0.15],
-    //     full: [0, 0, 0]
-    //   }
-    // }
-    
+      },
+      // Special transformations for hoodie
+      scale: [0.01, 0.01, 0.01],
+      rotation: [Math.PI / 2, 0, 0]
+    }
   ],
   jackets: [
     {
       id: "adidas_jacket",
       name: "Adidas Jacket",
       modelPath: "/adidas_jacket.glb",
-      geometryNode: "auto", // Will auto-detect
-      materialName: "auto", // Will auto-detect
+      geometryNode: "auto",
+      materialName: "auto",
       preview: "/threejs.png",
       decalPositions: {
         logo: [0, 0.1, 0.2],
@@ -212,8 +175,8 @@ export const AvailableModels = {
       id: "men_jacket",
       name: "Men's Jacket",
       modelPath: "/men_jacket_baked.glb",
-      geometryNode: "auto", // Will auto-detect
-      materialName: "auto", // Will auto-detect
+      geometryNode: "auto",
+      materialName: "auto",
       preview: "/threejs.png",
       decalPositions: {
         logo: [0, 0.1, 0.2],
@@ -226,8 +189,8 @@ export const AvailableModels = {
       id: "jeans_denim",
       name: "Denim Jeans",
       modelPath: "/jeans_denim_pants.glb",
-      geometryNode: "auto",
-      materialName: "auto",
+      geometryNode: "Object_2", // From your logs: first geometry node
+      materialName: "BTN_FABRIC_FRONT_7363545", // From your logs: first material
       preview: "/threejs.png",
       decalPositions: {
         logo: [0, 0.3, 0.1],
@@ -235,11 +198,11 @@ export const AvailableModels = {
       }
     },
     {
-      id: "pants_placeholder2",
-      name: "Pants Style 2",
+      id: "pants_style2",
+      name: "Grey Sweatpants",
       modelPath: "/pants_baked.glb",
-      geometryNode: "auto", // Will auto-detect the actual pants geometry
-      materialName: "auto", // Will auto-detect the actual pants material
+      geometryNode: "Object_4", // From your logs: first geometry node
+      materialName: "SSC_Grey_Sweatpants", // From your logs: available material
       preview: "/threejs.png",
       decalPositions: {
         logo: [0, 0.3, 0.1],
@@ -252,8 +215,8 @@ export const AvailableModels = {
       id: "man_shorts",
       name: "Men's Shorts",
       modelPath: "/man_shorts.glb",
-      geometryNode: "auto", // Will auto-detect
-      materialName: "auto", // Will auto-detect
+      geometryNode: "Object_2", // From your console log
+      materialName: "defaultMat", // From your console log
       preview: "/threejs.png",
       decalPositions: {
         logo: [0, 0.2, 0.1],
@@ -262,10 +225,10 @@ export const AvailableModels = {
     },
     {
       id: "shorts_style2",
-      name: "Shorts Style 2",
+      name: "Orange Puff Shorts",
       modelPath: "/orange_puff_shorts.glb",
-      geometryNode: "auto", // Will auto-detect the actual shorts geometry
-      materialName: "auto", // Will auto-detect the actual shorts material
+      geometryNode: "AAA_Pants_edit_Tassle001_0", // From your console log
+      materialName: "Tassle.001", // From your console log
       preview: "/threejs.png",
       decalPositions: {
         logo: [0, 0.2, 0.1],
@@ -296,10 +259,13 @@ export const AvailableModels = {
       decalPositions: {
         logo: [0, 0.04, 0.15],
         full: [0, 0, 0]
-      }
+      },
+      // Special transformations for white grace dress
+      scale: [2, 2, 2],
+      position: [0, 0.6, 0]
     }
   ],
   child: [
-    // Add child models here if available
+    // Add child models here when available
   ],
 };

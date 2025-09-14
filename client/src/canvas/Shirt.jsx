@@ -1,5 +1,5 @@
 // src/canvas/Shirt.jsx
-import React, { useMemo } from "react";
+import React, { useMemo, Suspense } from "react";
 import { easing } from "maath";
 import { useSnapshot } from "valtio";
 import { useFrame } from "@react-three/fiber";
@@ -50,22 +50,13 @@ function TextDecal({ textElement }) {
   );
 }
 
-// ---------- Shirt ----------
-const Shirt = () => {
-  const snap = useSnapshot(state);
-
-  // Get current model
-  const getCurrentModel = () => {
-    const categoryModels = AvailableModels[snap.selectedCategory] || [];
-    const foundModel = categoryModels.find(
-      (model) => model.id === snap.selectedModel
-    );
-    return foundModel || categoryModels[0];
-  };
-
-  const currentModel = getCurrentModel();
+// ---------- Model Component ----------
+function ModelMesh({ currentModel, snap }) {
   const modelPath = currentModel?.modelPath || "/shirt_baked.glb";
-  const renderKey = `${snap.selectedModel}-${snap.selectedCategory}-${modelPath}`;
+  
+  // Load model with proper error handling
+  const gltfData = useGLTF(modelPath, true); // Enable draco if needed
+  const { nodes, materials } = gltfData;
 
   // ---------- Logo Textures ----------
   const logoTexture = useTexture(snap.logoDecal || "/new1.png");
@@ -88,45 +79,86 @@ const Shirt = () => {
   const patternLeftTex = useTexture(patternLeft || "/new1.png");
   const patternRightTex = useTexture(patternRight || "/new1.png");
 
-  // Load model
-  let gltfData;
-  try {
-    gltfData = useGLTF(modelPath);
-  } catch (error) {
-    console.error("Error loading model:", modelPath, error);
-    gltfData = useGLTF("/shirt_baked.glb");
-  }
-
-  const { nodes, materials } = gltfData;
-
-  // Helpers
+  // Improved geometry finding logic
   const findModelGeometry = () => {
-    const nodeKeys = Object.keys(nodes || {});
+    if (!nodes) return null;
+    
+    const nodeKeys = Object.keys(nodes);
+    console.log(`Available nodes for ${currentModel.id}:`, nodeKeys);
+
+    // If geometryNode is specified in config, try to use it
     if (currentModel?.geometryNode && currentModel.geometryNode !== "auto") {
       const configuredNodes = Array.isArray(currentModel.geometryNode)
         ? currentModel.geometryNode
         : [currentModel.geometryNode];
+      
       for (const nodeKey of configuredNodes) {
         if (nodes[nodeKey]?.geometry) {
+          console.log(`Using configured geometry node: ${nodeKey}`);
           return { key: nodeKey, geometry: nodes[nodeKey].geometry };
         }
       }
     }
+
+    // Special handling for known models
     if (modelPath.includes("shirt_baked") && nodes.T_Shirt_male?.geometry) {
+      console.log("Using T_Shirt_male geometry for shirt_baked");
       return { key: "T_Shirt_male", geometry: nodes.T_Shirt_male.geometry };
     }
-    for (const key of nodeKeys) {
-      if (nodes[key]?.geometry) return { key, geometry: nodes[key].geometry };
+
+    // Auto-detect geometry from available nodes
+    const geometryNodes = nodeKeys.filter(key => nodes[key]?.geometry);
+    console.log(`Found ${geometryNodes.length} nodes with geometry:`, geometryNodes);
+
+    if (geometryNodes.length > 0) {
+      const selectedNode = geometryNodes[0]; // Use the first available geometry node
+      console.log(`Auto-selected geometry node: ${selectedNode}`);
+      return { key: selectedNode, geometry: nodes[selectedNode].geometry };
     }
+
+    console.warn(`No geometry found for model: ${modelPath}`);
     return null;
   };
 
+  // Improved material finding logic
   const findModelMaterial = () => {
+    if (!materials) return null;
+
+    const materialKeys = Object.keys(materials);
+    console.log(`Available materials for ${currentModel.id}:`, materialKeys);
+
+    // Special handling for known models
     if (modelPath.includes("shirt_baked") && materials.lambert1) {
+      console.log("Using lambert1 material for shirt_baked");
       return materials.lambert1;
     }
-    const keys = Object.keys(materials || {});
-    return keys.length > 0 ? materials[keys[0]] : null;
+
+    // If materialName is specified, try to use it
+    if (currentModel?.materialName && currentModel.materialName !== "auto") {
+      if (materials[currentModel.materialName]) {
+        console.log(`Using configured material: ${currentModel.materialName}`);
+        return materials[currentModel.materialName];
+      }
+    }
+
+    // If materialNames array is specified (for multi-material models)
+    if (currentModel?.materialNames && Array.isArray(currentModel.materialNames)) {
+      const foundMaterial = currentModel.materialNames.find(name => materials[name]);
+      if (foundMaterial) {
+        console.log(`Using material from materialNames array: ${foundMaterial}`);
+        return materials[foundMaterial];
+      }
+    }
+
+    // Auto-select first available material
+    if (materialKeys.length > 0) {
+      const selectedMaterial = materialKeys[0];
+      console.log(`Auto-selected material: ${selectedMaterial}`);
+      return materials[selectedMaterial];
+    }
+
+    console.warn(`No material found for model: ${modelPath}`);
+    return null;
   };
 
   const geometryInfo = findModelGeometry();
@@ -138,7 +170,9 @@ const Shirt = () => {
     }
   });
 
+  // Fallback if no geometry or material is found
   if (!geometryInfo || !material) {
+    console.error(`Failed to load model: ${modelPath}. Using fallback geometry.`);
     return (
       <group>
         <mesh>
@@ -152,128 +186,175 @@ const Shirt = () => {
   const logoPosition = currentModel?.decalPositions?.logo || [0, 0.04, 0.15];
   const fullPosition = currentModel?.decalPositions?.full || [0, 0, 0];
 
+  // Model-specific transformations from configuration
   const getModelScale = () => {
+    if (currentModel?.scale) return currentModel.scale;
     if (modelPath.includes("white_grace")) return [2, 2, 2];
     if (modelPath.includes("hoodie")) return [0.01, 0.01, 0.01];
     return [1, 1, 1];
   };
 
   const getModelPosition = () => {
+    if (currentModel?.position) return currentModel.position;
     if (modelPath.includes("white_grace")) return [0, 0.6, 0];
     return [0, 0, 0];
   };
 
   const getModelRotation = () => {
+    if (currentModel?.rotation) return currentModel.rotation;
     if (modelPath.includes("hoodie")) return [Math.PI / 2, 0, 0];
     return [0, 0, 0];
   };
 
   return (
+    <mesh
+      castShadow
+      geometry={geometryInfo.geometry}
+      material={material}
+      material-roughness={1}
+      dispose={null}
+      scale={getModelScale()}
+      position={getModelPosition()}
+      rotation={getModelRotation()}
+    >
+      {/* ---------- Full Texture ---------- */}
+      {snap.isFullTexture && snap.fullDecal && (
+        <Decal
+          position={fullPosition}
+          rotation={[0, 0, 0]}
+          scale={1}
+          map={fullTexture}
+        />
+      )}
+      {snap.isFullTexture && patternFull && (
+        <Decal
+          position={fullPosition}
+          rotation={[0, 0, 0]}
+          scale={1}
+          map={patternFullTex}
+          material-transparent={true}
+          material-toneMapped={false}
+          material-color={snap.color}
+          depthTest={false}
+          depthWrite={true}
+        />
+      )}
+
+      {/* ---------- Center Logo / Pattern ---------- */}
+      {snap.isLogoTexture && snap.logoDecal && (
+        <Decal
+          position={snap.logoCenterPosition || logoPosition}
+          rotation={[0, 0, 0]}
+          scale={snap.logoCenterScale || 0.15}
+          map={logoTexture}
+          depthTest={false}
+          depthWrite={true}
+        />
+      )}
+      {snap.isLogoTexture && patternCenter && (
+        <Decal
+          position={snap.logoCenterPosition || logoPosition}
+          rotation={[0, 0, 0]}
+          scale={snap.logoCenterScale || 0.15}
+          map={patternCenterTex}
+          depthTest={false}
+          depthWrite={true}
+        />
+      )}
+
+      {/* ---------- Left Logo / Pattern ---------- */}
+      {snap.isLogoLeftTexture && snap.logoLeftDecal && (
+        <Decal
+          position={snap.logoLeftPosition || [-0.13, 0.1, 0.1]}
+          rotation={[0, 0, 0]}
+          scale={snap.logoLeftScale || 0.1}
+          map={logoLeftTexture}
+          depthTest={false}
+          depthWrite={true}
+        />
+      )}
+      {snap.isLogoLeftTexture && patternLeft && (
+        <Decal
+          position={snap.logoLeftPosition || [-0.13, 0.1, 0.1]}
+          rotation={[0, 0, 0]}
+          scale={snap.logoLeftScale || 0.1}
+          map={patternLeftTex}
+          depthTest={false}
+          depthWrite={true}
+        />
+      )}
+
+      {/* ---------- Right Logo / Pattern ---------- */}
+      {snap.isLogoRightTexture && snap.logoRightDecal && (
+        <Decal
+          position={snap.logoRightPosition || [0.13, 0.1, 0.1]}
+          rotation={[0, 0, 0]}
+          scale={snap.logoRightScale || 0.1}
+          map={logoRightTexture}
+          depthTest={false}
+          depthWrite={true}
+        />
+      )}
+      {snap.isLogoRightTexture && patternRight && (
+        <Decal
+          position={snap.logoRightPosition || [0.13, 0.1, 0.1]}
+          rotation={[0, 0, 0]}
+          scale={snap.logoRightScale || 0.1}
+          map={patternRightTex}
+          depthTest={false}
+          depthWrite={true}
+        />
+      )}
+
+      {/* ---------- Text decals ---------- */}
+      {Array.isArray(snap.textElements) &&
+        snap.textElements.map((t) => <TextDecal key={t.id} textElement={t} />)}
+    </mesh>
+  );
+}
+
+// ---------- Main Shirt Component ----------
+const Shirt = () => {
+  const snap = useSnapshot(state);
+
+  // Get current model configuration
+  const getCurrentModel = () => {
+    const categoryModels = AvailableModels[snap.selectedCategory] || [];
+    const foundModel = categoryModels.find(
+      (model) => model.id === snap.selectedModel
+    );
+    
+    if (!foundModel) {
+      console.warn(`Model ${snap.selectedModel} not found in category ${snap.selectedCategory}, using fallback`);
+      return categoryModels[0] || {
+        id: "fallback",
+        name: "Fallback Model",
+        modelPath: "/shirt_baked.glb",
+        geometryNode: "T_Shirt_male",
+        materialName: "lambert1",
+        preview: "/threejs.png",
+        decalPositions: { logo: [0, 0.04, 0.15], full: [0, 0, 0] }
+      };
+    }
+    
+    return foundModel;
+  };
+
+  const currentModel = getCurrentModel();
+  const renderKey = `${snap.selectedModel}-${snap.selectedCategory}-${currentModel.modelPath}`;
+
+  console.log(`Rendering model: ${currentModel.id} with path: ${currentModel.modelPath}`);
+
+  return (
     <group key={renderKey}>
-      <mesh
-        castShadow
-        geometry={geometryInfo.geometry}
-        material={material}
-        material-roughness={1}
-        dispose={null}
-        scale={getModelScale()}
-        position={getModelPosition()}
-        rotation={getModelRotation()}
-      >
-       {/* ---------- Full Texture ---------- */}
-{snap.isFullTexture && snap.fullDecal && (
-  <Decal
-    position={fullPosition}
-    rotation={[0, 0, 0]}
-    scale={1}
-    map={fullTexture}
-  />
-)}
-{snap.isFullTexture && patternFull && (
-  <Decal
-    position={fullPosition}
-    rotation={[0, 0, 0]}
-    scale={1}
-    map={patternFullTex}
-    material-transparent={true}
-    material-toneMapped={false}
-    material-color={snap.color}   // 👈 tint applied here
-    depthTest={false}
-    depthWrite={true}
-  />
-)}
-
-
-        {/* ---------- Center Logo / Pattern ---------- */}
-        {snap.isLogoTexture && snap.logoDecal && (
-          <Decal
-            position={snap.logoCenterPosition || logoPosition}
-            rotation={[0, 0, 0]}
-            scale={snap.logoCenterScale || 0.15}
-            map={logoTexture}
-            depthTest={false}
-            depthWrite={true}
-          />
-        )}
-        {snap.isLogoTexture && patternCenter && (
-          <Decal
-            position={snap.logoCenterPosition || logoPosition}
-            rotation={[0, 0, 0]}
-            scale={snap.logoCenterScale || 0.15}
-            map={patternCenterTex}
-            depthTest={false}
-            depthWrite={true}
-          />
-        )}
-
-        {/* ---------- Left Logo / Pattern ---------- */}
-        {snap.isLogoLeftTexture && snap.logoLeftDecal && (
-          <Decal
-            position={snap.logoLeftPosition || [-0.13, 0.1, 0.1]}
-            rotation={[0, 0, 0]}
-            scale={snap.logoLeftScale || 0.1}
-            map={logoLeftTexture}
-            depthTest={false}
-            depthWrite={true}
-          />
-        )}
-        {snap.isLogoLeftTexture && patternLeft && (
-          <Decal
-            position={snap.logoLeftPosition || [-0.13, 0.1, 0.1]}
-            rotation={[0, 0, 0]}
-            scale={snap.logoLeftScale || 0.1}
-            map={patternLeftTex}
-            depthTest={false}
-            depthWrite={true}
-          />
-        )}
-
-        {/* ---------- Right Logo / Pattern ---------- */}
-        {snap.isLogoRightTexture && snap.logoRightDecal && (
-          <Decal
-            position={snap.logoRightPosition || [0.13, 0.1, 0.1]}
-            rotation={[0, 0, 0]}
-            scale={snap.logoRightScale || 0.1}
-            map={logoRightTexture}
-            depthTest={false}
-            depthWrite={true}
-          />
-        )}
-        {snap.isLogoRightTexture && patternRight && (
-          <Decal
-            position={snap.logoRightPosition || [0.13, 0.1, 0.1]}
-            rotation={[0, 0, 0]}
-            scale={snap.logoRightScale || 0.1}
-            map={patternRightTex}
-            depthTest={false}
-            depthWrite={true}
-          />
-        )}
-
-        {/* ---------- Text decals ---------- */}
-        {Array.isArray(snap.textElements) &&
-          snap.textElements.map((t) => <TextDecal key={t.id} textElement={t} />)}
-      </mesh>
+      <Suspense fallback={
+        <mesh>
+          <boxGeometry args={[1, 1, 1]} />
+          <meshStandardMaterial color={snap.color} />
+        </mesh>
+      }>
+        <ModelMesh currentModel={currentModel} snap={snap} />
+      </Suspense>
     </group>
   );
 };

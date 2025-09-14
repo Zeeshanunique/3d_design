@@ -4,10 +4,9 @@ const state = proxy({
   page: "home", // are we in home page
   logoControlMode: "translate",
 
-  // 🆕 Which panel/tab is active
+  // Which panel/tab is active
   activeFilterTab: null, // "logo" | "logoLeft" | "logoRight"
   
-
   // center logo
   logoCenterPosition: [0, 0.04, 0.15],
   logoCenterScale: 0.10,
@@ -39,44 +38,44 @@ const state = proxy({
   modelCustomizations: {
     // T-Shirts
     tshirt_basic: {
-  color: "#EFBD48",
-  isLogoTexture: true,
-  isFullTexture: false,
-  logoDecal: "./threejs.png",
-  fullDecal: "./threejs.png",
+      color: "#EFBD48",
+      isLogoTexture: true,
+      isFullTexture: false,
+      logoDecal: "./threejs.png",
+      fullDecal: "./threejs.png",
 
-  // Existing
-  isDotsPattern: false,
-  isStripesPattern: false,
-  isCirclesPattern: false,
-  isSmallDotsPattern: false,
-  dotsDecal: "/bigdots.webp",
-  stripesDecal: "/stripe.jpg",
-  circlesDecal: "/circles.png",
-  smallDotsDecal: "/dot.jpg",
+      // Existing
+      isDotsPattern: false,
+      isStripesPattern: false,
+      isCirclesPattern: false,
+      isSmallDotsPattern: false,
+      dotsDecal: "/bigdots.webp",
+      stripesDecal: "/stripe.jpg",
+      circlesDecal: "/circles.png",
+      smallDotsDecal: "/dot.jpg",
 
-  // 🆕 New patterns
-  isPattern1: false,
-  isPattern2: false,
-  isPattern3: false,
-  isPattern4: false,
-  isPattern5: false,
-  isPattern6: false,
-  isPattern7: false,
-  isPattern8: false,
-  isPattern9: false,
-  isPattern10: false,
-  pattern1Decal: "/new1.png",
-  pattern2Decal: "/new2.png",
-  pattern3Decal: "/new3.png",
-  pattern4Decal: "/new4.png",
-  pattern5Decal: "/new5.jpeg",
-  pattern6Decal: "/new6.jpeg",
-  pattern7Decal: "/new7.jpeg",
-  pattern8Decal: "/new8.jpeg",
-  pattern9Decal: "/new9.jpeg",
-  pattern10Decal: "/new10.jpeg",
-},
+      // New patterns
+      isPattern1: false,
+      isPattern2: false,
+      isPattern3: false,
+      isPattern4: false,
+      isPattern5: false,
+      isPattern6: false,
+      isPattern7: false,
+      isPattern8: false,
+      isPattern9: false,
+      isPattern10: false,
+      pattern1Decal: "/new1.png",
+      pattern2Decal: "/new2.png",
+      pattern3Decal: "/new3.png",
+      pattern4Decal: "/new4.png",
+      pattern5Decal: "/new5.jpeg",
+      pattern6Decal: "/new6.jpeg",
+      pattern7Decal: "/new7.jpeg",
+      pattern8Decal: "/new8.jpeg",
+      pattern9Decal: "/new9.jpeg",
+      pattern10Decal: "/new10.jpeg",
+    },
 
     tshirt_variant1: {
       color: "#EFBD48",
@@ -136,7 +135,7 @@ const state = proxy({
       logoDecal: "./threejs.png",
       fullDecal: "./threejs.png",
     },
-    pants_placeholder2: {
+    pants_style2: {
       color: "#EFBD48",
       isLogoTexture: true,
       isFullTexture: false,
@@ -152,6 +151,14 @@ const state = proxy({
       fullDecal: "./threejs.png",
     },
     shorts_style2: {
+      color: "#EFBD48",
+      isLogoTexture: true,
+      isFullTexture: false,
+      logoDecal: "./threejs.png",
+      fullDecal: "./threejs.png",
+    },
+    // Women
+    white_grace: {
       color: "#EFBD48",
       isLogoTexture: true,
       isFullTexture: false,
@@ -185,7 +192,7 @@ const state = proxy({
     );
   },
 
-  // 🆕 getters for left/right logo support
+  // getters for left/right logo support
   get isLogoLeftTexture() {
     return (
       this.modelCustomizations[this.selectedModel]?.isLogoLeftTexture || false
@@ -252,38 +259,36 @@ const state = proxy({
     );
   },
 
+  // New pattern states
+  get isPattern1() { return this.modelCustomizations[this.selectedModel]?.isPattern1 || false },
+  get pattern1Decal() { return this.modelCustomizations[this.selectedModel]?.pattern1Decal || "/new1.png" },
 
-  // 🆕 New pattern states
-get isPattern1() { return this.modelCustomizations[this.selectedModel]?.isPattern1 || false },
-get pattern1Decal() { return this.modelCustomizations[this.selectedModel]?.pattern1Decal || "/new1.png" },
+  get isPattern2() { return this.modelCustomizations[this.selectedModel]?.isPattern2 || false },
+  get pattern2Decal() { return this.modelCustomizations[this.selectedModel]?.pattern2Decal || "/new2.png" },
 
-get isPattern2() { return this.modelCustomizations[this.selectedModel]?.isPattern2 || false },
-get pattern2Decal() { return this.modelCustomizations[this.selectedModel]?.pattern2Decal || "/new2.png" },
+  get isPattern3() { return this.modelCustomizations[this.selectedModel]?.isPattern3 || false },
+  get pattern3Decal() { return this.modelCustomizations[this.selectedModel]?.pattern3Decal || "/new3.png" },
 
-get isPattern3() { return this.modelCustomizations[this.selectedModel]?.isPattern3 || false },
-get pattern3Decal() { return this.modelCustomizations[this.selectedModel]?.pattern3Decal || "/new3.png" },
+  get isPattern4() { return this.modelCustomizations[this.selectedModel]?.isPattern4 || false },
+  get pattern4Decal() { return this.modelCustomizations[this.selectedModel]?.pattern4Decal || "/new4.png" },
 
-get isPattern4() { return this.modelCustomizations[this.selectedModel]?.isPattern4 || false },
-get pattern4Decal() { return this.modelCustomizations[this.selectedModel]?.pattern4Decal || "/new4.png" },
+  get isPattern5() { return this.modelCustomizations[this.selectedModel]?.isPattern5 || false },
+  get pattern5Decal() { return this.modelCustomizations[this.selectedModel]?.pattern5Decal || "/new5.jpeg" },
 
-get isPattern5() { return this.modelCustomizations[this.selectedModel]?.isPattern5 || false },
-get pattern5Decal() { return this.modelCustomizations[this.selectedModel]?.pattern5Decal || "/new5.jpeg" },
+  get isPattern6() { return this.modelCustomizations[this.selectedModel]?.isPattern6 || false },
+  get pattern6Decal() { return this.modelCustomizations[this.selectedModel]?.pattern6Decal || "/new6.jpeg" },
 
-get isPattern6() { return this.modelCustomizations[this.selectedModel]?.isPattern6 || false },
-get pattern6Decal() { return this.modelCustomizations[this.selectedModel]?.pattern6Decal || "/new6.jpeg" },
+  get isPattern7() { return this.modelCustomizations[this.selectedModel]?.isPattern7 || false },
+  get pattern7Decal() { return this.modelCustomizations[this.selectedModel]?.pattern7Decal || "/new7.jpeg" },
 
-get isPattern7() { return this.modelCustomizations[this.selectedModel]?.isPattern7 || false },
-get pattern7Decal() { return this.modelCustomizations[this.selectedModel]?.pattern7Decal || "/new7.jpeg" },
+  get isPattern8() { return this.modelCustomizations[this.selectedModel]?.isPattern8 || false },
+  get pattern8Decal() { return this.modelCustomizations[this.selectedModel]?.pattern8Decal || "/new8.jpeg" },
 
-get isPattern8() { return this.modelCustomizations[this.selectedModel]?.isPattern8 || false },
-get pattern8Decal() { return this.modelCustomizations[this.selectedModel]?.pattern8Decal || "/new8.jpeg" },
+  get isPattern9() { return this.modelCustomizations[this.selectedModel]?.isPattern9 || false },
+  get pattern9Decal() { return this.modelCustomizations[this.selectedModel]?.pattern9Decal || "/new9.jpeg" },
 
-get isPattern9() { return this.modelCustomizations[this.selectedModel]?.isPattern9 || false },
-get pattern9Decal() { return this.modelCustomizations[this.selectedModel]?.pattern9Decal || "/new9.jpeg" },
-
-get isPattern10() { return this.modelCustomizations[this.selectedModel]?.isPattern10 || false },
-get pattern10Decal() { return this.modelCustomizations[this.selectedModel]?.pattern10Decal || "/new10.jpeg" },
-
+  get isPattern10() { return this.modelCustomizations[this.selectedModel]?.isPattern10 || false },
+  get pattern10Decal() { return this.modelCustomizations[this.selectedModel]?.pattern10Decal || "/new10.jpeg" },
 });
 
 // Helper function to ensure a model has customization data
@@ -310,7 +315,7 @@ export const ensureModelCustomization = (modelId) => {
       circlesDecal: "/circles.png",
       smallDotsDecal: "/dot.jpg",
 
-      // 🆕 New patterns (1 - 10)
+      // New patterns (1 - 10)
       isPattern1: false,
       isPattern2: false,
       isPattern3: false,
@@ -333,6 +338,30 @@ export const ensureModelCustomization = (modelId) => {
       pattern9Decal: "/new9.jpeg",
       pattern10Decal: "/new10.jpeg",
     };
+  }
+};
+
+// Helper function to switch category and ensure proper model selection
+export const switchToCategory = (categoryId, AvailableModels) => {
+  // Switch to the new category
+  state.selectedCategory = categoryId;
+  
+  // Get available models for this category
+  const categoryModels = AvailableModels[categoryId] || [];
+  
+  if (categoryModels.length > 0) {
+    // Check if current model exists in new category
+    const currentModelExists = categoryModels.find(model => model.id === state.selectedModel);
+    
+    if (!currentModelExists) {
+      // Switch to first available model in new category
+      const firstModel = categoryModels[0];
+      state.selectedModel = firstModel.id;
+      ensureModelCustomization(firstModel.id);
+      console.log(`Switched to category ${categoryId}, selected model: ${firstModel.id}`);
+    }
+  } else {
+    console.warn(`No models available for category: ${categoryId}`);
   }
 };
 
