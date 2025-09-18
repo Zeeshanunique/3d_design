@@ -507,7 +507,10 @@ const Home = () => {
   );
 
   return (
-    <div className="w-full overflow-x-hidden overflow-y-auto">
+    <div
+  className="overflow-y-auto h-screen"
+  style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+>
       <NavBar />
       <HeroSection />
       <Features />

@@ -21,7 +21,7 @@ import {
 } from '../components';
 
 const themes = {
-  light: { background: 'bg-gray-250', text: 'text-gray-900' },
+  light: { background: 'bg-gray-260', text: 'text-gray-900' },
   dark: { background: 'bg-gray-900', text: 'text-white' },
   blue: { background: 'bg-blue-200', text: 'text-blue-900' },
   Green: { background: 'bg-green-200', text: 'text-pink-900' },

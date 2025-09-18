@@ -92,7 +92,7 @@ input[type="file"] {
 
 /* Model Picker Styles */
 .modelpicker-container {
-  @apply absolute left-full ml-3 glassmorphism p-3 w-[195px] h-[280px] rounded-md flex flex-col gap-4;
+  @apply absolute left-full ml-3 glassmorphism p-3 w-[195px] h-[380px] rounded-md flex flex-col gap-4;
 }
 
 .category-sidebar {
@@ -133,4 +133,13 @@ input[type="file"] {
 
 .model-card {
   @apply transition-all duration-200 hover:scale-105 active:scale-95;
+}
+@layer utilities {
+  .no-scrollbar {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;     /* Firefox */
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;             /* Chrome, Safari, Opera */
+  }
 }
