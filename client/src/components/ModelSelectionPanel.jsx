@@ -11,6 +11,8 @@ const ModelSelectionPanel = () => {
   const currentCategoryModels = AvailableModels[snap.selectedCategory] || [];
 
   const handleModelSelect = (modelId) => {
+    console.log("🔍 Selecting model:", modelId); // Debug log
+
     // Ensure the model has customization data
     ensureModelCustomization(modelId);
 

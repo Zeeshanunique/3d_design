@@ -20,9 +20,15 @@ import {
   PatternPicker,
 } from '../components';
 
+const themes = {
+  light: { background: 'bg-gray-250', text: 'text-gray-900' },
+  dark: { background: 'bg-gray-900', text: 'text-white' },
+  blue: { background: 'bg-blue-200', text: 'text-blue-900' },
+  Green: { background: 'bg-green-200', text: 'text-pink-900' },
+};
+
 const Customizer = () => {
   const snap = useSnapshot(state);
-  const activeMode = snap.logoControlMode;
 
   const [file, setFile] = useState('');
   const [prompt, setPrompt] = useState('');
@@ -31,13 +37,11 @@ const Customizer = () => {
   const [activeEditorTab, setActiveEditorTab] = useState('');
   const [showTextCustomizer, setShowTextCustomizer] = useState(false);
 
-  // Switch editor tab
   const handleTabClick = (tabName) => {
-    setActiveEditorTab((prev) => (prev === tabName ? '' : tabName));
+    setActiveEditorTab(prev => (prev === tabName ? '' : tabName));
     setShowTextCustomizer(false);
   };
 
-  // Active filters (logos + full textures only, patterns are handled by PatternPicker)
   const activeFilterTab = {
     logoShirt: snap.isLogoTexture,
     stylishShirt: snap.isFullTexture,
@@ -45,7 +49,6 @@ const Customizer = () => {
     logoRightShirt: snap.isLogoRightTexture,
   };
 
-  // Add new text
   const handleAddText = (textProps) => {
     if (state.activeTextId) {
       handleUpdateText(state.activeTextId, textProps);
@@ -69,7 +72,6 @@ const Customizer = () => {
     state.activeTextId = id;
   };
 
-  // Render tab content
   const generateTabContent = () => {
     switch (activeEditorTab) {
       case 'colorpicker': return <ColorPicker />;
@@ -84,19 +86,13 @@ const Customizer = () => {
       );
       case 'modelpicker': return <ModelPicker />;
       case 'patternpicker': 
-        return (
-          <div className="absolute left-[70px] top-0 z-50 w-64">
-            <PatternPicker />
-          </div>
-        );
+        return <div className="absolute left-[70px] top-0 z-50 w-64"><PatternPicker /></div>;
       default: return null;
     }
   };
 
-  // Generate image (Pollinations)
   const handleSubmit = async (type) => {
     if (!prompt) return alert('Please enter a prompt');
-
     try {
       setGeneratingImg(true);
       const encodedPrompt = encodeURIComponent(prompt);
@@ -111,11 +107,9 @@ const Customizer = () => {
     }
   };
 
-  // Apply decals
   const handleDecals = (type, result) => {
     const decalType = DecalTypes[type];
     const currentModel = state.selectedModel;
-
     if (!state.modelCustomizations[currentModel]) return;
 
     switch (state.activeFilterTab) {
@@ -142,7 +136,6 @@ const Customizer = () => {
     }
   };
 
-  // Toggle filters
   const handleActiveFilterTab = (tabName) => {
     const currentModel = state.selectedModel;
     if (!state.modelCustomizations[currentModel]) return;
@@ -169,7 +162,6 @@ const Customizer = () => {
     }
   };
 
-  // Read file
   const readFile = (type) => {
     reader(file).then((result) => {
       handleDecals(type, result);
@@ -177,7 +169,6 @@ const Customizer = () => {
     });
   };
 
-  // Save to store
   const handleAddToStore = () => {
     try {
       const canvas = document.querySelector("canvas");
@@ -211,133 +202,152 @@ const Customizer = () => {
 
   return (
     <AnimatePresence>
+      {/* Outer container with theme applied */}
       <motion.div
         key="customizer-ui"
-        className="absolute top-0 left-0 z-10"
-        {...slideAnimation('left')}
+        className={`${themes[snap.theme]?.background || 'bg-gray-100'} w-screen h-screen`}
       >
-        {/* Left Tabs */}
-        <motion.header {...slideAnimation("down")} className="absolute top-5 left-5">
-          <img src='./threejs.png' alt="logo" className="w-8 h-8 object-contain" />
-        </motion.header>
+        {/* Existing Customizer UI (unchanged) */}
+        <motion.div
+          key="customizer-inner"
+          className="absolute top-0 left-0 z-10 w-full h-full"
+          {...slideAnimation('left')}
+        >
+          <motion.header {...slideAnimation("down")} className="absolute top-5 left-5">
+            <img src='./threejs.png' alt="logo" className="w-8 h-8 object-contain" />
+          </motion.header>
 
-        <div className="flex items-center min-h-screen">
-          <div className="editortabs-container tabs">
-            {EditorTabs.map((tab) => (
-              <Tab
-                key={tab.name}
-                tab={tab}
-                isActive={activeEditorTab === tab.name}
-                handleClick={() => handleTabClick(tab.name)}
-              />
-            ))}
-
-            {/* Text Editor */}
-            <div className="relative">
-              <CustomButton
-                type="filled"
-                title={showTextCustomizer ? "Hide Text Editor" : "Add Text"}
-                handleClick={() => setShowTextCustomizer(!showTextCustomizer)}
-                customStyles="w-fit px-4 py-2.5 font-bold text-sm mt-4"
-              />
-            </div>
-
-            {showTextCustomizer && (
-              <motion.div 
-                className="absolute left-[200px] top-0"
-                {...slideAnimation('left')}
-                style={{ zIndex: 30 }}
-              >
-                <TextCustomizer
-                  addTextToModel={handleAddText}
-                  activeText={snap.textElements.find(t => t.id === snap.activeTextId)}
-                  updateText={handleUpdateText}
+          <div className="flex items-center min-h-screen">
+            <div className="editortabs-container tabs">
+              {EditorTabs.map((tab) => (
+                <Tab
+                  key={tab.name}
+                  tab={tab}
+                  isActive={activeEditorTab === tab.name}
+                  handleClick={() => handleTabClick(tab.name)}
                 />
-              </motion.div>
-            )}
+              ))}
 
-            {generateTabContent()}
+              <div className="relative">
+                <CustomButton
+                  type="filled"
+                  title={showTextCustomizer ? "Hide Text Editor" : "Add Text"}
+                  handleClick={() => setShowTextCustomizer(!showTextCustomizer)}
+                  customStyles="w-fit px-4 py-2.5 font-bold text-sm mt-4"
+                />
+              </div>
+
+              {showTextCustomizer && (
+                <motion.div 
+                  className="absolute left-[200px] top-0"
+                  {...slideAnimation('left')}
+                  style={{ zIndex: 30 }}
+                >
+                  <TextCustomizer
+                    addTextToModel={handleAddText}
+                    activeText={snap.textElements.find(t => t.id === snap.activeTextId)}
+                    updateText={handleUpdateText}
+                  />
+                </motion.div>
+              )}
+
+              {generateTabContent()}
+            </div>
           </div>
+        </motion.div>
+
+        <div className="absolute top-5 left-5 flex gap-2 z-20">
+  <CustomButton
+    type="filled"
+    title="Sketch Board"
+    handleClick={() => (state.page = "sketch")}
+    customStyles="px-4 py-2 font-bold text-sm"
+  />
+</div>
+
+
+        {/* Theme Selector Buttons */}
+        <div className="absolute bottom-5 left-5 flex flex-row gap-2 z-50">
+          {Object.keys(themes).map((theme) => (
+            <CustomButton
+              key={theme}
+              type="filled"
+              title={theme.charAt(0).toUpperCase() + theme.slice(1)}
+              handleClick={() => (state.theme = theme)}
+              customStyles="px-3 py-1 text-sm font-bold"
+            />
+          ))}
         </div>
-      </motion.div>
 
-      <div className="absolute top-5 left-5 flex gap-2 z-20">
-        <CustomButton
-          type="filled"
-          title="Sketch Board"
-          handleClick={() => (state.page = "sketch")}
-          customStyles="px-4 py-2 font-bold text-sm"
-        />
-      </div>
-
-      {/* Top Right Buttons */}
-      <motion.div
-        key="top-buttons"
-        className="absolute z-10 top-5 right-5 flex gap-2"
-        {...fadeAnimation}
-      >
-        <CustomButton
-          type="filled"
-          title="Go Home"
-          handleClick={() => (state.page = "home")}
-          customStyles="w-fit px-4 py-2.5 font-bold text-sm"
-        />
-        <CustomButton
-          type="filled"
-          title="Go to Store"
-          handleClick={() => (state.page = "store")}
-          customStyles="w-fit px-4 py-2.5 font-bold text-sm"
-        />
-        <CustomButton
-          type="filled"
-          title="Add to Store"
-          handleClick={handleAddToStore}
-          customStyles="w-fit px-4 py-2.5 font-bold text-sm bg-green-500"
-        />
-      </motion.div>
-
-      {/* Filter Tabs */}
-      <motion.div
-        key="filter-tabs"
-        className="filtertabs-container"
-        {...slideAnimation('up')}
-      >
-        {FilterTabs.map((tab) => (
-          <Tab
-            key={tab.name}
-            tab={tab}
-            isFilterTab
-            isActiveTab={activeFilterTab[tab.name]}
-            handleClick={() => handleActiveFilterTab(tab.name)}
-          />
-        ))}
-      </motion.div>
-
-      {/* Logo Control Buttons */}
-      <motion.div
-        key="logo-controls"
-        className="absolute bottom-5 right-5 flex gap-2 bg-white/80 p-2 rounded-xl shadow-md"
-        {...fadeAnimation}
-      >
-        {["translate", "scale", "rotate"].map((mode) => (
+        {/* Top Right Buttons */}
+        <motion.div
+          key="top-buttons"
+          className="absolute z-10 top-5 right-5 flex gap-2"
+          {...fadeAnimation}
+        >
           <CustomButton
-            key={mode}
             type="filled"
-            title={mode === "translate" ? "Move" : mode === "scale" ? "Resize" : "Rotate"}
-            handleClick={() => (state.logoControlMode = mode)}
-            isActive={snap.logoControlMode === mode}
-            customStyles="font-bold text-sm"
+            title="Go Home"
+            handleClick={() => (state.page = "home")}
+            customStyles="w-fit px-4 py-2.5 font-bold text-sm"
           />
-        ))}
+          <CustomButton
+            type="filled"
+            title="Go to Store"
+            handleClick={() => (state.page = "store")}
+            customStyles="w-fit px-4 py-2.5 font-bold text-sm"
+          />
+          <CustomButton
+            type="filled"
+            title="Add to Store"
+            handleClick={handleAddToStore}
+            customStyles="w-fit px-4 py-2.5 font-bold text-sm bg-green-500"
+          />
+        </motion.div>
+
+        {/* Filter Tabs */}
+        <motion.div
+          key="filter-tabs"
+          className="filtertabs-container"
+          {...slideAnimation('up')}
+        >
+          {FilterTabs.map((tab) => (
+            <Tab
+              key={tab.name}
+              tab={tab}
+              isFilterTab
+              isActiveTab={activeFilterTab[tab.name]}
+              handleClick={() => handleActiveFilterTab(tab.name)}
+            />
+          ))}
+        </motion.div>
+
+        {/* Logo Control Buttons */}
+        <motion.div
+          key="logo-controls"
+          className="absolute bottom-5 right-5 flex gap-2 bg-white/80 p-2 rounded-xl shadow-md"
+          {...fadeAnimation}
+        >
+          {["translate", "scale", "rotate"].map((mode) => (
+            <CustomButton
+              key={mode}
+              type="filled"
+              title={mode === "translate" ? "Move" : mode === "scale" ? "Resize" : "Rotate"}
+              handleClick={() => (state.logoControlMode = mode)}
+              isActive={snap.logoControlMode === mode}
+              customStyles="font-bold text-sm"
+            />
+          ))}
+        </motion.div>
+
+        {/* Logo Panel */}
+        {["logoShirt", "logoLeftShirt", "logoRightShirt"].includes(snap.activeFilterTab) && (
+          <LogoControlPanel />
+        )}
+
+        {/* Model Selection */}
+        <ModelSelectionPanel key="model-selection-panel" />
       </motion.div>
-
-      {/* Logo Panel */}
-      {["logoShirt", "logoLeftShirt", "logoRightShirt"].includes(snap.activeFilterTab) && (
-        <LogoControlPanel />
-      )}
-
-      {/* Model Selection */}
-      <ModelSelectionPanel key="model-selection-panel" />
     </AnimatePresence>
   );
 };

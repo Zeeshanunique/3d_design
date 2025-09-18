@@ -158,114 +158,26 @@ export const AvailableModels = {
       rotation: [Math.PI / 2, 0, 0]
     }
   ],
-  jackets: [
-    {
-      id: "adidas_jacket",
-      name: "Adidas Jacket",
-      modelPath: "/adidas_jacket.glb",
-      geometryNode: "auto",
-      materialName: "auto",
-      preview: "/threejs.png",
-      decalPositions: {
-        logo: [0, 0.1, 0.2],
-        full: [0, 0, 0]
-      }
-    },
-    {
-      id: "men_jacket",
-      name: "Men's Jacket",
-      modelPath: "/men_jacket_baked.glb",
-      geometryNode: "auto",
-      materialName: "auto",
-      preview: "/threejs.png",
-      decalPositions: {
-        logo: [0, 0.1, 0.2],
-        full: [0, 0, 0]
-      }
-    }
+    jackets: [
+    { id: "adidas", name: "Adidas Jacket", preview: "/threejs.png" },
+    { id: "mensjacket", name: "Men's Jacket", preview: "/threejs.png" }
   ],
+
   pants: [
-    {
-      id: "jeans_denim",
-      name: "Denim Jeans",
-      modelPath: "/jeans_denim_pants.glb",
-      geometryNode: "Object_2", // From your logs: first geometry node
-      materialName: "BTN_FABRIC_FRONT_7363545", // From your logs: first material
-      preview: "/threejs.png",
-      decalPositions: {
-        logo: [0, 0.3, 0.1],
-        full: [0, 0, 0]
-      }
-    },
-    {
-      id: "pants_style2",
-      name: "Grey Sweatpants",
-      modelPath: "/pants_baked.glb",
-      geometryNode: "Object_4", // From your logs: first geometry node
-      materialName: "SSC_Grey_Sweatpants", // From your logs: available material
-      preview: "/threejs.png",
-      decalPositions: {
-        logo: [0, 0.3, 0.1],
-        full: [0, 0, 0]
-      }
-    }
+    { id: "jeans", name: "Denim Jeans", preview: "/threejs.png" },
+    { id: "baked", name: "Grey Sweatpants", preview: "/threejs.png" }
   ],
+
   shorts: [
-    {
-      id: "man_shorts",
-      name: "Men's Shorts",
-      modelPath: "/man_shorts.glb",
-      geometryNode: "Object_2", // From your console log
-      materialName: "defaultMat", // From your console log
-      preview: "/threejs.png",
-      decalPositions: {
-        logo: [0, 0.2, 0.1],
-        full: [0, 0, 0]
-      }
-    },
-    {
-      id: "shorts_style2",
-      name: "Orange Puff Shorts",
-      modelPath: "/orange_puff_shorts.glb",
-      geometryNode: "AAA_Pants_edit_Tassle001_0", // From your console log
-      materialName: "Tassle.001", // From your console log
-      preview: "/threejs.png",
-      decalPositions: {
-        logo: [0, 0.2, 0.1],
-        full: [0, 0, 0]
-      }
-    }
+    { id: "ShortModel", name: "Men's Shorts", preview: "/threejs.png" },
+    { id: "Shortpuff", name: "Orange Puff Shorts", preview: "/threejs.png" }
   ],
+
   women: [
-    {
-      id: "white_grace",
-      name: "White Grace Dress",
-      modelPath: "/white_grace.glb",
-      geometryNode: [
-        "Pattern_5947_0",
-        "Pattern_49271_0",
-        "Pattern_56511_0",
-        "Pattern_78981_0",
-        "Pattern_81858_0",
-        "Pattern_118342_0",
-        "Pattern_130160_0",
-        "Pattern_352561_0",
-        "Pattern_525393_0",
-        "Pattern_531516_0",
-        "Pattern_10922_0"
-      ],
-      materialName: "Unified_Material_575185",
-      preview: "/threejs.png",
-      decalPositions: {
-        logo: [0, 0.04, 0.15],
-        full: [0, 0, 0]
-      },
-      // Special transformations for white grace dress
-      scale: [2, 2, 2],
-      position: [0, 0.6, 0]
-    }
+    { id: "WomenModel", name: "White Grace Dress", preview: "/threejs.png" }
   ],
+
   child: [
-    // Add child models here when available
-  ],
+    // Add child models here if needed
+  ]
 };

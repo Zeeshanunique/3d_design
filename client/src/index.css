@@ -14,9 +14,8 @@ html {
     font-family: "Inter var", sans-serif;
   }
 }
-
 .app {
-  @apply relative w-full h-screen overflow-hidden;
+  @apply relative w-full min-h-screen overflow-x-hidden overflow-y-auto;
 }
 
 .home {

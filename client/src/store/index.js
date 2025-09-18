@@ -2,6 +2,37 @@ import { proxy } from "valtio";
 
 const state = proxy({
   page: "home", // are we in home page
+
+
+   theme: 'light', // default
+  themes: {
+    light: {
+      background: 'bg-white',
+      text: 'text-gray-900',
+      button: 'bg-gray-100 text-gray-900 hover:bg-gray-200',
+      panel: 'bg-white/80',
+    },
+    dark: {
+      background: 'bg-gray-900',
+      text: 'text-white',
+      button: 'bg-gray-800 text-white hover:bg-gray-700',
+      panel: 'bg-gray-800/80',
+    },
+    blue: {
+      background: 'bg-blue-50',
+      text: 'text-blue-900',
+      button: 'bg-blue-100 text-blue-900 hover:bg-blue-200',
+      panel: 'bg-blue-100/80',
+    },
+    green: {
+      background: 'bg-green-50',
+      text: 'text-green-900',
+      button: 'bg-green-100 text-green-900 hover:bg-green-200',
+      panel: 'bg-green-100/80',
+    },
+  },
+
+
   logoControlMode: "translate",
 
   // Which panel/tab is active
@@ -33,6 +64,14 @@ const state = proxy({
 
   // Selected product for ProductDetailsPage
   selectedProduct: null,
+
+
+   modelParts: {},
+
+
+  
+
+
 
   // Model-specific customizations - each model remembers its own settings
   modelCustomizations: {
@@ -120,13 +159,16 @@ const state = proxy({
       logoDecal: "./threejs.png",
       fullDecal: "./threejs.png",
     },
-    men_jacket: {
-      color: "#EFBD48",
-      isLogoTexture: true,
-      isFullTexture: false,
-      logoDecal: "./threejs.png",
-      fullDecal: "./threejs.png",
-    },
+   men_jacket: {
+  color: "#EFBD48",  // fallback (default whole model)
+  partColors: {},    // each mesh name -> color
+  partColorsInit:false,
+  isLogoTexture: true,
+  isFullTexture: false,
+  logoDecal: "./threejs.png",
+  fullDecal: "./threejs.png",
+},
+
     // Pants
     jeans_denim: {
       color: "#EFBD48",

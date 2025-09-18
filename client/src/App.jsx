@@ -12,14 +12,18 @@ import { CartProvider } from "./context/CartContext";
 function App() {
   const snap = useSnapshot(state);
 
-  const showCanvas = snap.page === "home" || snap.page === "customizer";
+  const showCanvas = snap.page === "customizer";
 
   return (
+    
     <CartProvider>
+      
       <main className="app transition-all ease-in">
+        
         {showCanvas && <Canvas />}
-
         {snap.page === "home" && <Home />}
+
+        
         {snap.page === "customizer" && <Customizer />}
         {snap.page === "store" && <StorePage />}
         {snap.page === "cart" && <CartPage />}

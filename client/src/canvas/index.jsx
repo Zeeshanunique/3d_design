@@ -1,26 +1,52 @@
 import React, { Suspense, useRef, useState, useEffect } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Center, Environment } from "@react-three/drei";
-import Shirt from "./Shirt";
-import CameraRig from "./CameraRig";
 
-const RotatableShirt = () => {
+import Shirt from "./Shirt";
+
+// Import all non-shirt models
+import { JeansDenim, PantBaked } from "./models/Pant";
+import { AdidasJacket, JacketMen } from "./models/JacketModel";
+import { WomenModel } from "./models/Women";
+import { ShortModel, Shortpuff } from "./models/Short";
+
+import CameraRig from "./CameraRig";
+import state from "../store";
+import { useSnapshot } from "valtio";
+
+// ✅ Mapping model IDs to their components
+const ModelComponents = {
+  // Pants
+  jeans: JeansDenim,
+  baked: PantBaked,
+
+  // Jackets
+  adidas: AdidasJacket,
+  mensjacket: JacketMen,
+
+  // Shorts
+  ShortModel: ShortModel,
+  Shortpuff: Shortpuff,
+
+  // Women
+  WomenModel: WomenModel,
+};
+
+const RotatableModel = () => {
   const ref = useRef();
+  const snap = useSnapshot(state);
   const { camera } = useThree();
 
   const [isDragging, setIsDragging] = useState(false);
   const [lastX, setLastX] = useState(0);
   const [rotationY, setRotationY] = useState(0);
-  const [zoom, setZoom] = useState(2.5); // initial camera distance
+  const [zoom, setZoom] = useState(2.5);
 
   useFrame(() => {
-    if (ref.current) {
-      ref.current.rotation.y = rotationY;
-    }
+    if (ref.current) ref.current.rotation.y = rotationY;
     camera.position.z = zoom;
   });
 
-  // Mouse drag rotation
   const onPointerDown = (e) => {
     setIsDragging(true);
     setLastX(e.clientX);
@@ -29,19 +55,19 @@ const RotatableShirt = () => {
   const onPointerMove = (e) => {
     if (isDragging) {
       const deltaX = e.clientX - lastX;
-      setRotationY((prev) => prev + deltaX * 0.01); // adjust speed
+      setRotationY((prev) => prev + deltaX * 0.01);
       setLastX(e.clientX);
     }
   };
 
   const onPointerUp = () => setIsDragging(false);
 
-  // Mouse wheel zoom
   const onWheel = (e) => {
-    setZoom((prev) => Math.min(Math.max(prev - e.deltaY * 0.01, 1.5), 5)); // clamp zoom
+    setZoom((prev) =>
+      Math.min(Math.max(prev - e.deltaY * 0.01, 1.5), 5)
+    );
   };
 
-  // Keyboard controls
   const handleKeyDown = (e) => {
     switch (e.key) {
       case "ArrowLeft":
@@ -66,6 +92,26 @@ const RotatableShirt = () => {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
+  // ✅ Render active model
+  const renderActiveModel = () => {
+    console.log("Active category:", snap.selectedCategory, "model:", snap.selectedModel);
+
+    if (snap.selectedCategory === "tshirts") return <Shirt />;
+
+    const ModelComp = ModelComponents[snap.selectedModel];
+    if (ModelComp){  
+      console.log("RotatableModel: Rendering model component:", snap.selectedModel); 
+      return <ModelComp />;}
+
+    // 🚨 Debug fallback if model is missing
+    return (
+      <mesh>
+        <boxGeometry />
+        <meshStandardMaterial color="red" />
+      </mesh>
+    );
+  };
+
   return (
     <group
       ref={ref}
@@ -83,7 +129,7 @@ const RotatableShirt = () => {
           </mesh>
         }
       >
-        <Shirt />
+        {renderActiveModel()}
       </Suspense>
     </group>
   );
@@ -102,7 +148,7 @@ const CanvasModel = () => {
         <Environment preset="city" />
         <CameraRig>
           <Center>
-            <RotatableShirt />
+            <RotatableModel />
           </Center>
         </CameraRig>
       </Canvas>
