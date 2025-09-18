@@ -6,7 +6,7 @@ export function WomenModel(props) {
   const { nodes, materials } = useGLTF('/white_grace.glb')
   return (
     <group {...props} dispose={null}>
-      <group scale={0.001}>
+      <group scale={0.0006}  position={[0, -0.3, 0]} >
         <mesh
           castShadow
           receiveShadow

@@ -6,19 +6,23 @@ export function ShortModel(props) {
   const { nodes, materials } = useGLTF('/man_shorts.glb')
   return (
     <group {...props} dispose={null}>
-      <mesh
-        castShadow
-        receiveShadow
-        geometry={nodes.Object_2.geometry}
-        material={materials.defaultMat}
-        rotation={[-Math.PI / 2, 0, 0]}
-      />
+      <group 
+        scale={0.9}           // slightly smaller
+        position={[0, -0.7, 0]} // move down a bit
+      >
+        <mesh
+          castShadow
+          receiveShadow
+          geometry={nodes.Object_2.geometry}
+          material={materials.defaultMat}
+          rotation={[-Math.PI / 2, 0, 0]}
+        />
+      </group>
     </group>
   )
 }
 
 useGLTF.preload('/man_shorts.glb')
-
 
 
 

@@ -1,5 +1,6 @@
-// src/pages/Home.jsx
 import React, { useState, useEffect } from "react";
+import state from "../store";
+
 import {
   motion,
   useScroll,
@@ -21,21 +22,29 @@ import {
   Mail,
   Phone,
   MapPin,
+  Sun,
+  Moon,
 } from "lucide-react";
-
-// ✅ Import state + Canvas
-import state from "../store";
-import { useSnapshot } from "valtio";
-import Canvas from "../canvas";
 
 const Home = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrollY, setScrollY] = useState(0);
+  const [isDarkMode, setIsDarkMode] = useState(true);
   const { scrollYProgress } = useScroll();
-  const opacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
-  const scale = useTransform(scrollYProgress, [0, 0.2], [1, 0.8]);
+  
+  // Only transform scale and y position, not opacity to prevent flickering
+  const scale = useTransform(scrollYProgress, [0, 0.3], [1, 0.9]);
+  const yTransform = useTransform(scrollYProgress, [0, 0.3], [0, -50]);
 
-  const snap = useSnapshot(state);
+  // Mock Canvas component for demo
+  const Canvas = () => (
+    <div className="w-full h-full bg-gradient-to-br from-blue-600/20 to-purple-600/20 rounded-lg flex items-center justify-center">
+      <div className="text-center">
+        <div className="w-32 h-32 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full mx-auto mb-4 animate-pulse"></div>
+        <p className="text-white/80">3D Canvas Placeholder</p>
+      </div>
+    </div>
+  );
 
   useEffect(() => {
     const updateScrollY = () => setScrollY(window.scrollY);
@@ -66,12 +75,20 @@ const Home = () => {
     setIsMenuOpen(false);
   };
 
+  const toggleTheme = () => {
+    setIsDarkMode(!isDarkMode);
+  };
+
   const NavBar = () => (
     <motion.nav
       className={`fixed top-0 w-full z-50 transition-all duration-300 ${
         scrollY > 50
-          ? "bg-gray-900/95 backdrop-blur-md shadow-xl border-b border-blue-500/20"
-          : "bg-gray-900/80 backdrop-blur-sm"
+          ? isDarkMode 
+            ? "bg-gray-900/95 backdrop-blur-md shadow-xl border-b border-blue-500/20"
+            : "bg-white/95 backdrop-blur-md shadow-xl border-b border-gray-200"
+          : isDarkMode
+            ? "bg-gray-900/80 backdrop-blur-sm"
+            : "bg-white/80 backdrop-blur-sm"
       }`}
       initial={{ y: -100 }}
       animate={{ y: 0 }}
@@ -94,22 +111,32 @@ const Home = () => {
           <div className="hidden md:flex items-center space-x-8">
             <button
               onClick={() => scrollToSection("features")}
-              className="text-gray-300 hover:text-blue-400 transition-colors font-medium"
+              className={`${isDarkMode ? 'text-gray-300 hover:text-blue-400' : 'text-gray-700 hover:text-blue-600'} transition-colors font-medium`}
             >
               Features
             </button>
             <button
               onClick={() => scrollToSection("testimonials")}
-              className="text-gray-300 hover:text-blue-400 transition-colors font-medium"
+              className={`${isDarkMode ? 'text-gray-300 hover:text-blue-400' : 'text-gray-700 hover:text-blue-600'} transition-colors font-medium`}
             >
               Reviews
             </button>
             <button
               onClick={() => scrollToSection("contact")}
-              className="text-gray-300 hover:text-blue-400 transition-colors font-medium"
+              className={`${isDarkMode ? 'text-gray-300 hover:text-blue-400' : 'text-gray-700 hover:text-blue-600'} transition-colors font-medium`}
             >
               Contact
             </button>
+
+            {/* Theme Toggle Button */}
+            <motion.button
+              onClick={toggleTheme}
+              className={`p-2 rounded-full ${isDarkMode ? 'bg-gray-800 text-yellow-400 hover:bg-gray-700' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'} transition-all`}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            </motion.button>
 
             <motion.button
               className="bg-gradient-to-r from-purple-600 to-pink-500 text-white px-6 py-2 rounded-full font-medium hover:shadow-lg hover:shadow-purple-500/25 transition-all"
@@ -130,7 +157,7 @@ const Home = () => {
           </div>
 
           <button
-            className="md:hidden text-gray-300"
+            className={`md:hidden ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
             {isMenuOpen ? <X /> : <Menu />}
@@ -141,7 +168,7 @@ const Home = () => {
       <AnimatePresence>
         {isMenuOpen && (
           <motion.div
-            className="md:hidden bg-gray-900/95 backdrop-blur-md border-t border-blue-500/20"
+            className={`md:hidden ${isDarkMode ? 'bg-gray-900/95' : 'bg-white/95'} backdrop-blur-md border-t ${isDarkMode ? 'border-blue-500/20' : 'border-gray-200'}`}
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
@@ -149,21 +176,29 @@ const Home = () => {
             <div className="px-4 py-6 space-y-4">
               <button
                 onClick={() => scrollToSection("features")}
-                className="block text-gray-300 hover:text-blue-400 transition-colors"
+                className={`block ${isDarkMode ? 'text-gray-300 hover:text-blue-400' : 'text-gray-700 hover:text-blue-600'} transition-colors`}
               >
                 Features
               </button>
               <button
                 onClick={() => scrollToSection("testimonials")}
-                className="block text-gray-300 hover:text-blue-400 transition-colors"
+                className={`block ${isDarkMode ? 'text-gray-300 hover:text-blue-400' : 'text-gray-700 hover:text-blue-600'} transition-colors`}
               >
                 Reviews
               </button>
               <button
                 onClick={() => scrollToSection("contact")}
-                className="block text-gray-300 hover:text-blue-400 transition-colors"
+                className={`block ${isDarkMode ? 'text-gray-300 hover:text-blue-400' : 'text-gray-700 hover:text-blue-600'} transition-colors`}
               >
                 Contact
+              </button>
+
+              <button
+                onClick={toggleTheme}
+                className={`flex items-center gap-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}
+              >
+                {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+                {isDarkMode ? 'Light Mode' : 'Dark Mode'}
               </button>
 
               <button
@@ -184,11 +219,11 @@ const Home = () => {
   );
 
   const HeroSection = () => (
-    <section className="relative min-h-screen flex items-center justify-center bg-gray-900">
-      {/* 3D Canvas as background */}
+    <section className={`relative min-h-screen flex items-center justify-center ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'} transition-colors duration-500`}>
+      {/* 3D Canvas as background - NO OPACITY TRANSFORM to prevent flickering */}
       <motion.div
         className="absolute inset-0 z-0"
-        style={{ opacity, scale }}
+        style={{ scale, y: yTransform }} // Only transform scale and position
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1 }}
@@ -199,14 +234,17 @@ const Home = () => {
       {/* Overlay content */}
       <div className="relative z-10 max-w-4xl mx-auto px-4 text-center">
         <motion.h1
-          className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-blue-400 via-cyan-300 to-purple-400 bg-clip-text text-transparent"
+          className={`text-5xl md:text-7xl font-bold mb-6 ${isDarkMode 
+            ? 'bg-gradient-to-r from-blue-400 via-cyan-300 to-purple-400' 
+            : 'bg-gradient-to-r from-blue-600 via-cyan-600 to-purple-600'
+          } bg-clip-text text-transparent transition-all duration-500`}
           {...fadeInUp}
         >
           Design Your Style in 3D
         </motion.h1>
 
         <motion.p
-          className="text-xl md:text-2xl text-gray-300 mb-8"
+          className={`text-xl md:text-2xl ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} mb-8 transition-colors duration-500`}
           {...fadeInUp}
           transition={{ delay: 0.2 }}
         >
@@ -238,16 +276,16 @@ const Home = () => {
         animate={{ y: [0, 10, 0] }}
         transition={{ repeat: Infinity, duration: 2 }}
       >
-        <ChevronDown className="w-8 h-8 text-gray-400" />
+        <ChevronDown className={`w-8 h-8 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-500`} />
       </motion.div>
     </section>
   );
 
   const Features = () => (
-    <section id="features" className="py-24 bg-gray-800">
+    <section id="features" className={`py-24 ${isDarkMode ? 'bg-gray-800' : 'bg-white'} transition-colors duration-500`}>
       <div className="max-w-7xl mx-auto px-4">
         <motion.h2
-          className="text-4xl font-bold text-center mb-16 text-white"
+          className={`text-4xl font-bold text-center mb-16 ${isDarkMode ? 'text-white' : 'text-gray-900'} transition-colors duration-500`}
           {...fadeInUp}
         >
           Powerful Features
@@ -283,15 +321,18 @@ const Home = () => {
           ].map((feature, idx) => (
             <motion.div
               key={idx}
-              className="bg-gray-900/60 rounded-2xl p-8 hover:bg-gray-900/90 transition-all border border-gray-700"
+              className={`${isDarkMode 
+                ? 'bg-gray-900/60 hover:bg-gray-900/90 border-gray-700' 
+                : 'bg-gray-50 hover:bg-gray-100 border-gray-200'
+              } rounded-2xl p-8 transition-all border`}
               variants={fadeInUp}
               whileHover={{ y: -10 }}
             >
               <div className="mb-4">{feature.icon}</div>
-              <h3 className="text-xl font-semibold text-white mb-2">
+              <h3 className={`text-xl font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-2 transition-colors duration-500`}>
                 {feature.title}
               </h3>
-              <p className="text-gray-400">{feature.desc}</p>
+              <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-500`}>{feature.desc}</p>
             </motion.div>
           ))}
         </motion.div>
@@ -300,10 +341,10 @@ const Home = () => {
   );
 
   const Testimonials = () => (
-    <section id="testimonials" className="py-24 bg-gray-900">
+    <section id="testimonials" className={`py-24 ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'} transition-colors duration-500`}>
       <div className="max-w-7xl mx-auto px-4">
         <motion.h2
-          className="text-4xl font-bold text-center mb-16 text-white"
+          className={`text-4xl font-bold text-center mb-16 ${isDarkMode ? 'text-white' : 'text-gray-900'} transition-colors duration-500`}
           {...fadeInUp}
         >
           What Our Users Say
@@ -337,19 +378,22 @@ const Home = () => {
           ].map((t, idx) => (
             <motion.div
               key={idx}
-              className="bg-gray-800 rounded-2xl p-8 hover:bg-gray-700/80 transition-all border border-gray-700"
+              className={`${isDarkMode 
+                ? 'bg-gray-800 hover:bg-gray-700/80 border-gray-700' 
+                : 'bg-white hover:bg-gray-50 border-gray-200'
+              } rounded-2xl p-8 transition-all border`}
               variants={fadeInUp}
             >
               <div className="flex items-center mb-4">
                 <Users className="w-8 h-8 text-blue-400 mr-3" />
                 <div>
-                  <h3 className="text-lg font-semibold text-white">
+                  <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} transition-colors duration-500`}>
                     {t.name}
                   </h3>
-                  <p className="text-gray-400 text-sm">{t.role}</p>
+                  <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} text-sm transition-colors duration-500`}>{t.role}</p>
                 </div>
               </div>
-              <p className="text-gray-300 italic">"{t.quote}"</p>
+              <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-700'} italic transition-colors duration-500`}>"{t.quote}"</p>
             </motion.div>
           ))}
         </motion.div>
@@ -378,10 +422,10 @@ const Home = () => {
         >
           <button
             className="bg-white text-blue-600 px-8 py-4 rounded-full font-medium text-lg hover:shadow-lg transition-all flex items-center justify-center gap-2"
-            onClick={() => (state.page = "customizer")}
+            onClick={() => console.log('Navigate to customizer')}
           >
             <Sparkles className="w-5 h-5" />
-            Customize It
+            3D World
           </button>
           <button className="bg-gray-900/40 text-white px-8 py-4 rounded-full font-medium text-lg hover:bg-gray-900/60 transition-all flex items-center justify-center gap-2 border border-white/20">
             <ArrowRight className="w-5 h-5" />
@@ -395,7 +439,7 @@ const Home = () => {
   const Footer = () => (
     <footer
       id="contact"
-      className="bg-gray-900 py-12 border-t border-gray-800"
+      className={`${isDarkMode ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'} py-12 border-t transition-colors duration-500`}
     >
       <div className="max-w-7xl mx-auto px-4 grid md:grid-cols-3 gap-8">
         <div>
@@ -403,21 +447,21 @@ const Home = () => {
             <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-cyan-400 rounded-lg flex items-center justify-center">
               <Sparkles className="w-5 h-5 text-white" />
             </div>
-            <span className="text-xl font-bold text-white">FashionAI</span>
+            <span className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} transition-colors duration-500`}>FashionAI</span>
           </div>
-          <p className="text-gray-400">
+          <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-500`}>
             Revolutionizing fashion design with the power of artificial
             intelligence.
           </p>
         </div>
 
         <div>
-          <h3 className="text-white font-semibold mb-4">Quick Links</h3>
-          <ul className="space-y-2 text-gray-400">
+          <h3 className={`${isDarkMode ? 'text-white' : 'text-gray-900'} font-semibold mb-4 transition-colors duration-500`}>Quick Links</h3>
+          <ul className={`space-y-2 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-500`}>
             <li>
               <button
                 onClick={() => scrollToSection("features")}
-                className="hover:text-blue-400 transition-colors"
+                className={`${isDarkMode ? 'hover:text-blue-400' : 'hover:text-blue-600'} transition-colors`}
               >
                 Features
               </button>
@@ -425,7 +469,7 @@ const Home = () => {
             <li>
               <button
                 onClick={() => scrollToSection("testimonials")}
-                className="hover:text-blue-400 transition-colors"
+                className={`${isDarkMode ? 'hover:text-blue-400' : 'hover:text-blue-600'} transition-colors`}
               >
                 Reviews
               </button>
@@ -433,7 +477,7 @@ const Home = () => {
             <li>
               <button
                 onClick={() => scrollToSection("contact")}
-                className="hover:text-blue-400 transition-colors"
+                className={`${isDarkMode ? 'hover:text-blue-400' : 'hover:text-blue-600'} transition-colors`}
               >
                 Contact
               </button>
@@ -442,8 +486,8 @@ const Home = () => {
         </div>
 
         <div>
-          <h3 className="text-white font-semibold mb-4">Contact Us</h3>
-          <ul className="space-y-2 text-gray-400">
+          <h3 className={`${isDarkMode ? 'text-white' : 'text-gray-900'} font-semibold mb-4 transition-colors duration-500`}>Contact Us</h3>
+          <ul className={`space-y-2 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-500`}>
             <li className="flex items-center gap-2">
               <Mail className="w-4 h-4" /> support@fashionai.com
             </li>
@@ -456,7 +500,7 @@ const Home = () => {
           </ul>
         </div>
       </div>
-      <div className="mt-12 border-t border-gray-800 pt-8 text-center text-gray-500">
+      <div className={`mt-12 border-t ${isDarkMode ? 'border-gray-800 text-gray-500' : 'border-gray-200 text-gray-600'} pt-8 text-center transition-colors duration-500`}>
         © 2025 FashionAI. All rights reserved.
       </div>
     </footer>

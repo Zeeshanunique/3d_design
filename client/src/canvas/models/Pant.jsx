@@ -49,7 +49,7 @@ export function PantBaked(props) {
   const { nodes, materials } = useGLTF('/pants_baked.glb');
   return (
     <group {...props} dispose={null}>
-      <group position={[0, -0.156, 0]} scale={0.001}>
+      <group position={[0, -0.5, 0]} scale={0.0008}>
         <mesh
           castShadow
           receiveShadow

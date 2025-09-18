@@ -15,7 +15,7 @@ export function AdidasJacket({ color = "#ffffff", ...props }) {
 
   return (
     <AutoFitModel {...props}>
-      <group dispose={null}>
+      <group dispose={null} >
         <group rotation={[-Math.PI / 2, 0, 0]}>
           <group rotation={[Math.PI / 2, 0, 0]}>
             <mesh geometry={nodes.defaultMaterial.geometry} material={jacketMaterial} />

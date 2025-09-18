@@ -35,17 +35,31 @@ const ModelComponents = {
 const RotatableModel = () => {
   const ref = useRef();
   const snap = useSnapshot(state);
-  const { camera } = useThree();
+  const { camera, clock } = useThree();
 
   const [isDragging, setIsDragging] = useState(false);
   const [lastX, setLastX] = useState(0);
   const [rotationY, setRotationY] = useState(0);
   const [zoom, setZoom] = useState(2.5);
 
-  useFrame(() => {
-    if (ref.current) ref.current.rotation.y = rotationY;
-    camera.position.z = zoom;
-  });
+  
+
+
+useFrame(() => {
+  if (ref.current) {
+    // Base rotation from dragging
+    ref.current.rotation.y = rotationY;
+
+    // Subtle but more noticeable idle tilt
+    const t = clock.getElapsedTime();
+    ref.current.rotation.y += Math.sin(t * 0.7) * 0.03; // stronger left-right sway
+    ref.current.rotation.x = Math.sin(t * 0.5) * 0.05;   // stronger forward-back tilt
+  }
+
+  camera.position.z = zoom;
+});
+
+
 
   const onPointerDown = (e) => {
     setIsDragging(true);
@@ -63,9 +77,7 @@ const RotatableModel = () => {
   const onPointerUp = () => setIsDragging(false);
 
   const onWheel = (e) => {
-    setZoom((prev) =>
-      Math.min(Math.max(prev - e.deltaY * 0.01, 1.5), 5)
-    );
+    setZoom((prev) => Math.min(Math.max(prev - e.deltaY * 0.01, 1.5), 5));
   };
 
   const handleKeyDown = (e) => {
@@ -94,14 +106,10 @@ const RotatableModel = () => {
 
   // ✅ Render active model
   const renderActiveModel = () => {
-    console.log("Active category:", snap.selectedCategory, "model:", snap.selectedModel);
-
     if (snap.selectedCategory === "tshirts") return <Shirt />;
 
     const ModelComp = ModelComponents[snap.selectedModel];
-    if (ModelComp){  
-      console.log("RotatableModel: Rendering model component:", snap.selectedModel); 
-      return <ModelComp />;}
+    if (ModelComp) return <ModelComp />;
 
     // 🚨 Debug fallback if model is missing
     return (
