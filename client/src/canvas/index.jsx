@@ -3,13 +3,13 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Center, Environment } from "@react-three/drei";
 
 import Shirt from "./Shirt";
+import { SleeveModel } from "./models/SleeveModel"; // Import the new SleeveModel
 
 // Import all non-shirt models
 import { JeansDenim, PantBaked } from "./models/Pant";
 import { AdidasJacket, JacketMen } from "./models/JacketModel";
 import { WomenModel } from "./models/Women";
 import { ShortModel, Shortpuff } from "./models/Short";
-import { LongModel } from "./models/LongSleeve";
 
 import CameraRig from "./CameraRig";
 import state from "../store";
@@ -32,7 +32,8 @@ const ModelComponents = {
   // Women
   WomenModel: WomenModel,
 
-  LongModel: LongModel,
+  // Special case: Long Sleeve T-Shirt with multi-part support
+  tshirt_longsleeve: SleeveModel,
 };
 
 const RotatableModel = () => {
@@ -45,24 +46,19 @@ const RotatableModel = () => {
   const [rotationY, setRotationY] = useState(0);
   const [zoom, setZoom] = useState(2.5);
 
-  
+  useFrame(() => {
+    if (ref.current) {
+      // Base rotation from dragging
+      ref.current.rotation.y = rotationY;
 
+      // Subtle but more noticeable idle tilt
+      const t = clock.getElapsedTime();
+      ref.current.rotation.y += Math.sin(t * 0.7) * 0.03; // stronger left-right sway
+      ref.current.rotation.x = Math.sin(t * 0.5) * 0.05;   // stronger forward-back tilt
+    }
 
-useFrame(() => {
-  if (ref.current) {
-    // Base rotation from dragging
-    ref.current.rotation.y = rotationY;
-
-    // Subtle but more noticeable idle tilt
-    const t = clock.getElapsedTime();
-    ref.current.rotation.y += Math.sin(t * 0.7) * 0.03; // stronger left-right sway
-    ref.current.rotation.x = Math.sin(t * 0.5) * 0.05;   // stronger forward-back tilt
-  }
-
-  camera.position.z = zoom;
-});
-
-
+    camera.position.z = zoom;
+  });
 
   const onPointerDown = (e) => {
     setIsDragging(true);
@@ -107,9 +103,16 @@ useFrame(() => {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
-  // ✅ Render active model
+  // ✅ Render active model with special handling for long sleeve
   const renderActiveModel = () => {
-    if (snap.selectedCategory === "tshirts") return <Shirt />;
+    if (snap.selectedCategory === "tshirts") {
+      // Special case: if long sleeve is selected, use SleeveModel
+      if (snap.selectedModel === "tshirt_longsleeve") {
+        return <SleeveModel />;
+      }
+      // For all other t-shirts, use the regular Shirt component
+      return <Shirt />;
+    }
 
     const ModelComp = ModelComponents[snap.selectedModel];
     if (ModelComp) return <ModelComp />;

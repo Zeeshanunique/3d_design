@@ -3,8 +3,7 @@ import { proxy } from "valtio";
 const state = proxy({
   page: "home", // are we in home page
 
-
-   theme: 'light', // default
+  theme: 'light', // default
   themes: {
     light: {
       background: 'bg-white',
@@ -31,7 +30,6 @@ const state = proxy({
       panel: 'bg-green-100/80',
     },
   },
-
 
   logoControlMode: "translate",
 
@@ -65,13 +63,11 @@ const state = proxy({
   // Selected product for ProductDetailsPage
   selectedProduct: null,
 
-
-   modelParts: {},
-
-
-  
-
-
+  // Model parts for multi-part coloring
+  modelParts: {
+    // Will be populated dynamically when models load
+    // Structure: { modelId: [{ materialName, displayName, selected }] }
+  },
 
   // Model-specific customizations - each model remembers its own settings
   modelCustomizations: {
@@ -81,7 +77,7 @@ const state = proxy({
       isLogoTexture: true,
       isFullTexture: false,
       logoDecal: "./threejs.png",
-      fullDecal: "./threejs.png ",
+      fullDecal: "./threejs.png",
 
       // Existing
       isDotsPattern: false,
@@ -130,13 +126,27 @@ const state = proxy({
       logoDecal: "./threejs.png",
       fullDecal: "./threejs.png",
     },
+    
+    // Long Sleeve with Multi-Part Support
     tshirt_longsleeve: {
       color: "#EFBD48",
       isLogoTexture: true,
+      isLogoLeftTexture: false,
+      isLogoRightTexture: false,
       isFullTexture: false,
       logoDecal: "./threejs.png",
+      logoLeftDecal: "./threejs.png",
+      logoRightDecal: "./threejs.png",
       fullDecal: "./threejs.png",
+      partColors: {}, // Multi-part support - stores individual part colors
+      
+      // Pattern support
+      patternCenter: null,
+      patternFull: null,
+      patternLeft: null,
+      patternRight: null,
     },
+    
     tshirt_hoodie: {
       color: "#EFBD48",
       isLogoTexture: true,
@@ -151,6 +161,7 @@ const state = proxy({
       logoDecal: "./threejs.png",
       fullDecal: "./threejs.png",
     },
+    
     // Jackets
     adidas_jacket: {
       color: "#EFBD48",
@@ -159,15 +170,15 @@ const state = proxy({
       logoDecal: "./threejs.png",
       fullDecal: "./threejs.png",
     },
-   men_jacket: {
-  color: "#EFBD48",  // fallback (default whole model)
-  partColors: {},    // each mesh name -> color
-  partColorsInit:false,
-  isLogoTexture: true,
-  isFullTexture: false,
-  logoDecal: "./threejs.png",
-  fullDecal: "./threejs.png",
-},
+    men_jacket: {
+      color: "#EFBD48",  // fallback (default whole model)
+      partColors: {},    // each mesh name -> color
+      partColorsInit: false,
+      isLogoTexture: true,
+      isFullTexture: false,
+      logoDecal: "./threejs.png",
+      fullDecal: "./threejs.png",
+    },
 
     // Pants
     jeans_denim: {
@@ -184,6 +195,7 @@ const state = proxy({
       logoDecal: "./threejs.png",
       fullDecal: "./threejs.png",
     },
+    
     // Shorts
     man_shorts: {
       color: "#EFBD48",
@@ -199,6 +211,7 @@ const state = proxy({
       logoDecal: "./threejs.png",
       fullDecal: "./threejs.png",
     },
+    
     // Women
     white_grace: {
       color: "#EFBD48",
@@ -346,6 +359,13 @@ export const ensureModelCustomization = (modelId) => {
       logoLeftDecal: "./threejs.png",
       logoRightDecal: "./threejs.png",
       fullDecal: "./threejs.png",
+      partColors: {}, // Multi-part support
+
+      // Pattern support
+      patternCenter: null,
+      patternFull: null,
+      patternLeft: null,
+      patternRight: null,
 
       // existing pattern toggles + decals
       isDotsPattern: false,

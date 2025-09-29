@@ -130,7 +130,9 @@ export const AvailableModels = {
         full: [0, 0, 0]
       }
     },
-    /*
+
+  {
+  
   id: "tshirt_longsleeve",
   name: "Long Sleeve T-Shirt",
   modelPath: "/t-shirt_-_lengan_panjang.glb",
@@ -153,9 +155,9 @@ export const AvailableModels = {
   position: [0, -0.4, 0],   // drop it lower so it sits right
   rotation: [0, 0, 0]
 
+},
 
 
-*/  
 
 
 
