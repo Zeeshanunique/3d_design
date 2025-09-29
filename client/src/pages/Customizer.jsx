@@ -256,7 +256,7 @@ const Customizer = () => {
           </div>
         </motion.div>
 
-        <div className="absolute top-5 left-5 flex gap-2 z-20">
+        <div className="absolute top-1 left-10 flex gap-2 z-20">
   <CustomButton
     type="filled"
     title="Sketch Board"
@@ -264,6 +264,8 @@ const Customizer = () => {
     customStyles="px-4 py-2 font-bold text-sm"
   />
 </div>
+
+
 
 
         {/* Theme Selector Buttons */}
@@ -303,6 +305,13 @@ const Customizer = () => {
             handleClick={handleAddToStore}
             customStyles="w-fit px-4 py-2.5 font-bold text-sm bg-green-500"
           />
+           {/* 2D Button */}
+  <CustomButton
+    type="filled"
+    title="2D Designer"
+    handleClick={() => (state.page = "designer2d")}
+    customStyles="w-fit px-4 py-2.5 font-bold text-sm bg-blue-500"
+  />
         </motion.div>
 
         {/* Filter Tabs */}

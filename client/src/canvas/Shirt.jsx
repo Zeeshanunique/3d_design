@@ -3,7 +3,7 @@ import React, { useMemo, Suspense } from "react";
 import { easing } from "maath";
 import { useSnapshot } from "valtio";
 import { useFrame } from "@react-three/fiber";
-import { Decal, useGLTF, useTexture } from "@react-three/drei";
+import { Decal, useGLTF, useTexture, Center} from "@react-three/drei";
 import * as THREE from "three";
 
 import state from "../store";
@@ -183,28 +183,67 @@ function ModelMesh({ currentModel, snap }) {
     );
   }
 
+  
+
   const logoPosition = currentModel?.decalPositions?.logo || [0, 0.04, 0.15];
   const fullPosition = currentModel?.decalPositions?.full || [0, 0, 0];
 
+  
+
   // Model-specific transformations from configuration
   const getModelScale = () => {
-    if (currentModel?.scale) return currentModel.scale;
-    if (modelPath.includes("white_grace")) return [2, 2, 2];
-    if (modelPath.includes("hoodie")) return [0.01, 0.01, 0.01];
-    return [1, 1, 1];
-  };
+  if (currentModel?.scale) return currentModel.scale;
+  if (modelPath.includes("t-shirt_-_lengan_panjang")) return [0.9, .0, 0.9]; // 👈 scale down longsleeve
+  if (modelPath.includes("white_grace")) return [2, 2, 2];
+  if (modelPath.includes("hoodie")) return [0.01, 0.01, 0.01];
+  return [1, 1, 1];
+};
 
-  const getModelPosition = () => {
-    if (currentModel?.position) return currentModel.position;
-    if (modelPath.includes("white_grace")) return [0, 0.6, 0];
-    return [0, 0, 0];
-  };
+const getModelPosition = () => {
+  if (currentModel?.position) return currentModel.position;
+  if (modelPath.includes("t-shirt_-_lengan_panjang")) return [0, -9, 0]; // 👈 move down
+  if (modelPath.includes("white_grace")) return [0, 0.6, 0];
+  return [0, 0, 0];
+};
 
-  const getModelRotation = () => {
-    if (currentModel?.rotation) return currentModel.rotation;
-    if (modelPath.includes("hoodie")) return [Math.PI / 2, 0, 0];
-    return [0, 0, 0];
-  };
+const getModelRotation = () => {
+  if (currentModel?.rotation) return currentModel.rotation;
+  if (modelPath.includes("t-shirt_-_lengan_panjang")) return [0, Math.PI, 0]; // 👈 face camera
+  if (modelPath.includes("hoodie")) return [Math.PI / 2, 0, 0];
+  return [0, 0, 0];
+};
+
+ if (currentModel.id === "tshirt_longsleeve") {
+  const geoNodes = [
+    "Object_2","Object_3","Object_4","Object_5","Object_6","Object_7","Object_8"
+  ];
+  const mats = [
+    "Back_FRONT_2239",
+    "Collar_FRONT_2229",
+    "Front_FRONT_2234",
+    "Lower_Left_FRONT_2224",
+    "Lower_Right_FRONT_2214",
+    "Upper_Left_FRONT_2219",
+    "Upper_Right_FRONT_2209"
+  ];
+
+  return (
+  
+      <group  scale={[0.5, 0.7, 0.7]} > {/* adjust scale if needed */}
+        {geoNodes.map((key, i) => (
+          <mesh
+            key={key}
+            geometry={nodes[key]?.geometry}
+            material={materials[mats[i]]}
+            castShadow
+            receiveShadow
+          />
+        ))}
+      </group>
+    
+  );
+}
+
 
   return (
     <mesh

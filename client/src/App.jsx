@@ -8,6 +8,7 @@ import CartPage from "./pages/CartPage";
 import ProductDetailsPage from "./pages/ProductDetailsPage";
 import SketchPage from "./pages/SketchPage"; // ⬅️ Import SketchPage
 import { CartProvider } from "./context/CartContext";
+import Designer2D from "./pages/Designer2D";
 
 function App() {
   const snap = useSnapshot(state);
@@ -28,6 +29,8 @@ function App() {
         {snap.page === "store" && <StorePage />}
         {snap.page === "cart" && <CartPage />}
         {snap.page === "sketch" && <SketchPage />} {/* ⬅️ Sketch page */}
+        {snap.page === "designer2d" && <Designer2D />}
+
 
         {snap.page.startsWith("product-") && <ProductDetailsPage />}
       </main>

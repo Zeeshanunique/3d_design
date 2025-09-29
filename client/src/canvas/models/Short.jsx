@@ -28,9 +28,14 @@ useGLTF.preload('/man_shorts.glb')
 
 export function Shortpuff(props) {
   const { nodes, materials } = useGLTF('/orange_puff_shorts.glb')
+
   return (
     <group {...props} dispose={null}>
-      <group scale={100}>
+      <group
+        position={[0, -1.5, 0]}   // move down so it's not floating
+        scale={1.6}               // more reasonable than 100
+        rotation={[-Math.PI / 60, 0, 0]} // upright
+      >
         <mesh
           castShadow
           receiveShadow
@@ -54,4 +59,5 @@ export function Shortpuff(props) {
   )
 }
 
-useGLTF.preload('/orange_puff_shorts.glb')
+
+useGLTF.preload('/orange_puff_shorts.glb');

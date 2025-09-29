@@ -85,9 +85,9 @@ export const ModelCategories = [
     icon: fileIcon,
   },
   {
-    id: "child",
-    name: "Child",
-    shortTitle: "CHILD",
+    id: "long",
+    name: "longsleeve",
+    shortTitle: "Sleeve",
     icon: fileIcon,
   },
 ];
@@ -130,18 +130,35 @@ export const AvailableModels = {
         full: [0, 0, 0]
       }
     },
-    {
-      id: "tshirt_longsleeve",
-      name: "Long Sleeve T-Shirt",
-      modelPath: "/t-shirt_-_lengan_panjang.glb",
-      geometryNode: "Sketchfab_model",
-      materialNames: ["Back_FRONT_2239", "Collar_FRONT_2229", "Front_FRONT_2234", "Lower_Left_FRONT_2224", "Lower_Right_FRONT_2214", "Upper_Left_FRONT_2219", "Upper_Right_FRONT_2209"],
-      preview: "/threejs.png",
-      decalPositions: {
-        logo: [0, 0.04, 0.15],
-        full: [0, 0, 0]
-      }
-    },
+    /*
+  id: "tshirt_longsleeve",
+  name: "Long Sleeve T-Shirt",
+  modelPath: "/t-shirt_-_lengan_panjang.glb",
+  geometryNode: "multi",   // tell loader this is multi-mesh
+  materialNames: [
+    "Back_FRONT_2239",
+    "Collar_FRONT_2229",
+    "Front_FRONT_2234",
+    "Lower_Left_FRONT_2224",
+    "Lower_Right_FRONT_2214",
+    "Upper_Left_FRONT_2219",
+    "Upper_Right_FRONT_2209"
+  ],
+  preview: "/threejs.png",
+  decalPositions: {
+    logo: [0, 0.12, 0.2],  // adjust decal a bit higher for long sleeve
+    full: [0, 0, 0]
+  },
+  scale: [1.2, 1.2, 1.2],   // slightly larger than basic tee
+  position: [0, -0.4, 0],   // drop it lower so it sits right
+  rotation: [0, 0, 0]
+
+
+
+*/  
+
+
+
     {
       id: "tshirt_hoodie",
       name: "Hoodie T-Shirt",
@@ -177,7 +194,7 @@ export const AvailableModels = {
     { id: "WomenModel", name: "White Grace Dress", preview: "/threejs.png" }
   ],
 
-  child: [
-    // Add child models here if needed
+  long: [
+    { id: "LongModel",name: "LongSleeve", preview: "/threejs.png" }
   ]
 };

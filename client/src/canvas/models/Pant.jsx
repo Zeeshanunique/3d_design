@@ -2,11 +2,13 @@ import React from 'react';
 import { useGLTF } from '@react-three/drei';
 
 // Jeans Denim Model
+// Jeans Denim Model
 export function JeansDenim(props) {
   const { nodes, materials } = useGLTF('/jeans_denim_pants.glb');
   return (
     <group {...props} dispose={null}>
-      <group rotation={[-Math.PI / 2, 0, 0]}>
+      {/* Adjust position and scale so it's consistent with PantBaked */}
+      <group position={[0, -0.4, 0]} scale={0.0008} rotation={[-Math.PI / 2, 0, 0]}>
         <mesh
           castShadow
           receiveShadow
@@ -42,7 +44,6 @@ export function JeansDenim(props) {
   );
 }
 
-useGLTF.preload('/jeans_denim_pants.glb');
 
 // Pants Baked Model
 export function PantBaked(props) {

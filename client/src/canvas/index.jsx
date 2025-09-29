@@ -9,6 +9,7 @@ import { JeansDenim, PantBaked } from "./models/Pant";
 import { AdidasJacket, JacketMen } from "./models/JacketModel";
 import { WomenModel } from "./models/Women";
 import { ShortModel, Shortpuff } from "./models/Short";
+import { LongModel } from "./models/LongSleeve";
 
 import CameraRig from "./CameraRig";
 import state from "../store";
@@ -30,6 +31,8 @@ const ModelComponents = {
 
   // Women
   WomenModel: WomenModel,
+
+  LongModel: LongModel,
 };
 
 const RotatableModel = () => {
