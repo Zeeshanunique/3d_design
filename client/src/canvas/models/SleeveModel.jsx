@@ -17,7 +17,9 @@ function createTextTexture(textElement) {
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.fillStyle = textElement.color || "#000000";
-  ctx.font = `${textElement.fontSize || 24}px ${textElement.fontFamily || "Arial"}`;
+  ctx.font = `${textElement.fontSize || 24}px ${
+    textElement.fontFamily || "Arial"
+  }`;
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
   ctx.fillText(textElement.text || "", canvas.width / 2, canvas.height / 2);
@@ -31,16 +33,15 @@ export function SleeveModel(props) {
 
   // Material names from the long sleeve model
   const materialNames = [
-    "Back_FRONT_2239", 
-    "Collar_FRONT_2229", 
-    "Front_FRONT_2234", 
-    "Lower_Left_FRONT_2224", 
-    "Lower_Right_FRONT_2214", 
-    "Upper_Left_FRONT_2219", 
-    "Upper_Right_FRONT_2209"
+    "Back_FRONT_2239",
+    "Collar_FRONT_2229",
+    "Front_FRONT_2234",
+    "Lower_Left_FRONT_2224",
+    "Lower_Right_FRONT_2214",
+    "Upper_Left_FRONT_2219",
+    "Upper_Right_FRONT_2209",
   ];
 
-  // Debug: Log available nodes and materials
   console.log("SleeveModel - Available nodes:", Object.keys(nodes || {}));
   console.log("SleeveModel - Available materials:", Object.keys(materials || {}));
 
@@ -49,31 +50,32 @@ export function SleeveModel(props) {
     if (!materials) return;
 
     const availableParts = materialNames
-      .filter(materialName => materials[materialName]) // Only include materials that exist
-      .map(materialName => {
+      .filter((materialName) => materials[materialName]) // Only include materials that exist
+      .map((materialName) => {
         let displayName = materialName;
-        // Convert technical names to user-friendly names
-        if (materialName.includes('Back_')) displayName = 'Back';
-        else if (materialName.includes('Collar_')) displayName = 'Collar';
-        else if (materialName.includes('Front_')) displayName = 'Front';
-        else if (materialName.includes('Lower_Left_')) displayName = 'Lower Left Sleeve';
-        else if (materialName.includes('Lower_Right_')) displayName = 'Lower Right Sleeve';
-        else if (materialName.includes('Upper_Left_')) displayName = 'Upper Left Sleeve';
-        else if (materialName.includes('Upper_Right_')) displayName = 'Upper Right Sleeve';
-        
+        if (materialName.includes("Back_")) displayName = "Back";
+        else if (materialName.includes("Collar_")) displayName = "Collar";
+        else if (materialName.includes("Front_")) displayName = "Front";
+        else if (materialName.includes("Lower_Left_"))
+          displayName = "Lower Left Sleeve";
+        else if (materialName.includes("Lower_Right_"))
+          displayName = "Lower Right Sleeve";
+        else if (materialName.includes("Upper_Left_"))
+          displayName = "Upper Left Sleeve";
+        else if (materialName.includes("Upper_Right_"))
+          displayName = "Upper Right Sleeve";
+
         return {
           materialName: materialName,
           displayName: displayName,
-          selected: false
+          selected: false,
         };
       });
 
     console.log("SleeveModel - Initialized parts:", availableParts);
 
-    // Update state with available parts for this model
     state.modelParts[snap.selectedModel] = availableParts;
-    
-    // Initialize part colors if not exists
+
     if (!state.modelCustomizations[snap.selectedModel].partColors) {
       state.modelCustomizations[snap.selectedModel].partColors = {};
     }
@@ -99,76 +101,54 @@ export function SleeveModel(props) {
   // Animation frame for individual part colors
   useFrame((_, delta) => {
     if (!materials) return;
-    
-    materialNames.forEach(materialName => {
+
+    materialNames.forEach((materialName) => {
       const material = materials[materialName];
       if (material && material.color) {
-        // Check if this part has a custom color
-        const customColor = snap.modelCustomizations?.[snap.selectedModel]?.partColors?.[materialName];
+        const customColor =
+          snap.modelCustomizations?.[snap.selectedModel]?.partColors?.[
+            materialName
+          ];
         const targetColor = customColor || snap.color;
         easing.dampC(material.color, targetColor, 0.25, delta);
       }
     });
   });
 
-  // Find the main geometry - try multiple approaches
-  const findGeometry = () => {
-    if (!nodes) return null;
-
-    // Try the configured geometry node first
-    if (nodes.Sketchfab_model?.geometry) {
-      return nodes.Sketchfab_model.geometry;
-    }
-
-    // Try to find any geometry node
-    const nodeKeys = Object.keys(nodes);
-    for (const nodeKey of nodeKeys) {
-      if (nodes[nodeKey]?.geometry) {
-        console.log(`Using geometry from node: ${nodeKey}`);
-        return nodes[nodeKey].geometry;
-      }
-    }
-
-    return null;
-  };
-
-  const geometry = findGeometry();
-  
-  if (!geometry || !materials) {
-    console.error("SleeveModel - Missing geometry or materials");
-    console.log("Geometry found:", !!geometry);
-    console.log("Materials found:", !!materials);
-    
-    return (
-      <mesh>
-        <boxGeometry args={[1, 1, 1]} />
-        <meshStandardMaterial color="#ff0000" />
-        <meshStandardMaterial attach="material" color={snap.color}>
-          <primitive object={new THREE.Color("red")} attach="color" />
-        </meshStandardMaterial>
-      </mesh>
-    );
-  }
-
   const logoPosition = [0, 0.04, 0.15];
   const fullPosition = [0, 0, 0];
 
-  // Filter materials to only existing ones
-  const existingMaterials = materialNames.filter(name => materials[name]);
-  
+  const existingMaterials = materialNames.filter((name) => materials[name]);
+
   console.log("SleeveModel - Rendering with materials:", existingMaterials);
 
   return (
-    <group {...props} dispose={null} scale={5} position={[1, -3, 1]}>
+    <group
+      {...props}
+      dispose={null}
+      scale={0.0009}
+      position={[0, -1.2, 0]}
+      rotation={[-Math.PI / 2, 0, 0]}
+    >
       {existingMaterials.map((materialName) => {
         const material = materials[materialName];
-        
+
+        // ✅ FIX: Use node-specific geometry instead of one geometry for all
+        const node =
+          nodes[materialName] ||
+          Object.values(nodes).find((n) => n.material === material);
+
+        if (!node?.geometry) {
+          console.warn(`No geometry found for material: ${materialName}`);
+          return null;
+        }
+
         return (
           <mesh
             key={materialName}
             castShadow
             receiveShadow
-            geometry={geometry}
+            geometry={node.geometry} // ✅ now uses correct geometry
             material={material}
             material-roughness={1}
             dispose={null}
@@ -196,81 +176,103 @@ export function SleeveModel(props) {
               />
             )}
 
-            {/* Center Logo - only on Front material */}
-            {snap.isLogoTexture && snap.logoDecal && materialName.includes('Front_') && (
-              <Decal
-                position={snap.logoCenterPosition || logoPosition}
-                rotation={[0, 0, 0]}
-                scale={snap.logoCenterScale || 0.15}
-                map={logoTexture}
-                depthTest={false}
-                depthWrite={true}
-              />
-            )}
-            {snap.isLogoTexture && patternCenter && materialName.includes('Front_') && (
-              <Decal
-                position={snap.logoCenterPosition || logoPosition}
-                rotation={[0, 0, 0]}
-                scale={snap.logoCenterScale || 0.15}
-                map={patternCenterTex}
-                depthTest={false}
-                depthWrite={true}
-              />
-            )}
+          {/* Center Logo - only on Front material */}
+{snap.isLogoTexture &&
+  snap.logoDecal &&
+  materialName.includes("Front_") && (
+    <Decal
+      position={snap.logoCenterPosition || [0, 0.2, 0.25]} // moved outward a bit
+      rotation={[0, 0, 0]}
+      scale={snap.logoCenterScale || 0.4} // larger so it's visible
+      map={logoTexture}
+      transparent={true} // ✅ allow logo alpha
+      toneMapped={false} // ✅ prevent darkening
+      depthTest={false}
+      depthWrite={true}
+    />
+  )}
 
-            {/* Left Logo - on Left sleeve materials */}
-            {snap.isLogoLeftTexture && snap.logoLeftDecal && materialName.includes('Left_') && (
-              <Decal
-                position={snap.logoLeftPosition || [-0.13, 0.1, 0.1]}
-                rotation={[0, 0, 0]}
-                scale={snap.logoLeftScale || 0.1}
-                map={logoLeftTexture}
-                depthTest={false}
-                depthWrite={true}
-              />
-            )}
-            {snap.isLogoLeftTexture && patternLeft && materialName.includes('Left_') && (
-              <Decal
-                position={snap.logoLeftPosition || [-0.13, 0.1, 0.1]}
-                rotation={[0, 0, 0]}
-                scale={snap.logoLeftScale || 0.1}
-                map={patternLeftTex}
-                depthTest={false}
-                depthWrite={true}
-              />
-            )}
+{snap.isLogoTexture &&
+  patternCenter &&
+  materialName.includes("Front_") && (
+    <Decal
+      position={snap.logoCenterPosition || [0, 0.2, 0.25]}
+      rotation={[0, 0, 0]}
+      scale={snap.logoCenterScale || 0.4}
+      map={patternCenterTex}
+      transparent={true}
+      toneMapped={false}
+      depthTest={false}
+      depthWrite={true}
+    />
+  )}
 
-            {/* Right Logo - on Right sleeve materials */}
-            {snap.isLogoRightTexture && snap.logoRightDecal && materialName.includes('Right_') && (
-              <Decal
-                position={snap.logoRightPosition || [0.13, 0.1, 0.1]}
-                rotation={[0, 0, 0]}
-                scale={snap.logoRightScale || 0.1}
-                map={logoRightTexture}
-                depthTest={false}
-                depthWrite={true}
-              />
-            )}
-            {snap.isLogoRightTexture && patternRight && materialName.includes('Right_') && (
-              <Decal
-                position={snap.logoRightPosition || [0.13, 0.1, 0.1]}
-                rotation={[0, 0, 0]}
-                scale={snap.logoRightScale || 0.1}
-                map={patternRightTex}
-                depthTest={false}
-                depthWrite={true}
-              />
-            )}
 
-            {/* Text decals - only render on front material to avoid duplicates */}
-            {materialName.includes('Front_') && Array.isArray(snap.textElements) &&
+            {/* Left Logo */}
+            {snap.isLogoLeftTexture &&
+              snap.logoLeftDecal &&
+              materialName.includes("Left_") && (
+                <Decal
+                  position={snap.logoLeftPosition || [-0.13, 0.1, 0.1]}
+                  rotation={[0, 0, 0]}
+                  scale={snap.logoLeftScale || 0.1}
+                  map={logoLeftTexture}
+                  depthTest={false}
+                  depthWrite={true}
+                />
+              )}
+            {snap.isLogoLeftTexture &&
+              patternLeft &&
+              materialName.includes("Left_") && (
+                <Decal
+                  position={snap.logoLeftPosition || [-0.13, 0.1, 0.1]}
+                  rotation={[0, 0, 0]}
+                  scale={snap.logoLeftScale || 0.1}
+                  map={patternLeftTex}
+                  depthTest={false}
+                  depthWrite={true}
+                />
+              )}
+
+            {/* Right Logo */}
+            {snap.isLogoRightTexture &&
+              snap.logoRightDecal &&
+              materialName.includes("Right_") && (
+                <Decal
+                  position={snap.logoRightPosition || [0.13, 0.1, 0.1]}
+                  rotation={[0, 0, 0]}
+                  scale={snap.logoRightScale || 0.1}
+                  map={logoRightTexture}
+                  depthTest={false}
+                  depthWrite={true}
+                />
+              )}
+            {snap.isLogoRightTexture &&
+              patternRight &&
+              materialName.includes("Right_") && (
+                <Decal
+                  position={snap.logoRightPosition || [0.13, 0.1, 0.1]}
+                  rotation={[0, 0, 0]}
+                  scale={snap.logoRightScale || 0.1}
+                  map={patternRightTex}
+                  depthTest={false}
+                  depthWrite={true}
+                />
+              )}
+
+            {/* Text decals */}
+            {materialName.includes("Front_") &&
+              Array.isArray(snap.textElements) &&
               snap.textElements.map((textElement) => {
-                const textTexture = useMemo(() => createTextTexture(textElement), [
-                  textElement.text,
-                  textElement.fontSize,
-                  textElement.fontFamily,
-                  textElement.color,
-                ]);
+                const textTexture = useMemo(
+                  () => createTextTexture(textElement),
+                  [
+                    textElement.text,
+                    textElement.fontSize,
+                    textElement.fontFamily,
+                    textElement.color,
+                  ]
+                );
 
                 return (
                   <Decal
