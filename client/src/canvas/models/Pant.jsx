@@ -49,7 +49,7 @@ export function JeansDenim(props) {
         "#ffffff";
 
       if (mesh.material && mesh.material.color) {
-        easing.dampC(mesh.material.color, new THREE.Color(colorHex), 0.25, delta);
+        easing.dampC(mesh.material.color, new THREE.Color(colorHex), 0.10, delta);
       }
     });
   });

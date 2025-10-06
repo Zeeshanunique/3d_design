@@ -141,10 +141,36 @@ const state = proxy({
       partColors: {}, // Multi-part support - stores individual part colors
       
       // Pattern support
-      patternCenter: null,
-      patternFull: null,
-      patternLeft: null,
-      patternRight: null,
+      isDotsPattern: false,
+      isStripesPattern: false,
+      isCirclesPattern: false,
+      isSmallDotsPattern: false,
+     dotsDecal: "/bigdots.webp",
+      stripesDecal: "/stripe.jpg",
+      circlesDecal: "/circles.png",
+      smallDotsDecal: "/dot.jpg",
+
+      // New patterns
+      isPattern1: false,
+      isPattern2: false,
+      isPattern3: false,
+      isPattern4: false,
+      isPattern5: false,
+      isPattern6: false,
+      isPattern7: false,
+      isPattern8: false,
+      isPattern9: false,
+      isPattern10: false,
+      pattern1Decal: "/new1.png",
+      pattern2Decal: "/new2.png",
+      pattern3Decal: "/new3.png",
+      pattern4Decal: "/new4.png",
+      pattern5Decal: "/new5.jpeg",
+      pattern6Decal: "/new6.jpeg",
+      pattern7Decal: "/new7.jpeg",
+      pattern8Decal: "/new8.jpeg",
+      pattern9Decal: "/new9.jpeg",
+      pattern10Decal: "/new10.jpeg",
     },
     
     tshirt_hoodie: {

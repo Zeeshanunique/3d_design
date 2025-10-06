@@ -1,17 +1,32 @@
 import React, { useState } from "react";
+import { useSnapshot } from "valtio";
+import state from "../store";
 import TwoDCanvas from "../components/2dcomponent/TwoDCanvas";
 import ColorPicker2D from "../components/2dcomponent/ColorPicker2d";
-import { ChromePicker } from "react-color"; // simple color picker
 import { PatternPicker, CustomButton } from "../components";
+import { ArrowLeft } from "lucide-react"; // icon for back button
 
 const Designer2D = () => {
+  const snap = useSnapshot(state);
   const [color, setColor] = useState("#EFBD48");
   const [pattern, setPattern] = useState(null);
   const [logo, setLogo] = useState(null);
 
   return (
     <div className="flex flex-col items-center gap-4 p-4">
-      <h1 className="text-xl font-bold">2D Shirt Designer</h1>
+      {/* Header with small Back button */}
+      <div className="w-full flex justify-between items-center mb-2">
+        {/* Small Back Button */}
+        <button
+          onClick={() => (state.page = "customizer")}
+          className="flex items-center gap-1 px-2 py-1 rounded-full bg-gray-200 hover:bg-gray-300 transition"
+        >
+          <ArrowLeft size={16} />
+        </button>
+
+        <h1 className="text-lg font-semibold">2D Shirt Designer</h1>
+        <div className="w-6" /> {/* Spacer for symmetry */}
+      </div>
 
       {/* 2D Canvas */}
       <TwoDCanvas
@@ -33,9 +48,6 @@ const Designer2D = () => {
         {/* Pattern picker */}
         <PatternPicker onSelectPattern={setPattern} />
 
-        {/* Logo picker 
-        <LogoPicker onSelectLogo={setLogo} />*/}
-
         {/* Download button */}
         <CustomButton
           type="filled"
@@ -45,7 +57,7 @@ const Designer2D = () => {
             if (!canvas) return alert("Canvas not found");
             const link = document.createElement("a");
             link.download = "my-shirt.png";
-            link.href = canvas.toDataURL("imagepng");
+            link.href = canvas.toDataURL("image/png");
             link.click();
           }}
         />

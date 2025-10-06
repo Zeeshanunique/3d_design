@@ -78,6 +78,8 @@ const PatternPicker = () => {
     snap.modelCustomizations[snap.selectedModel]?.patternRight ||
     null;
 
+    
+
   return (
     <div className="grid grid-cols-3 gap-2 p-2 bg-white rounded-lg shadow-md max-h-60 overflow-y-auto">
       {patterns.map((p) => (

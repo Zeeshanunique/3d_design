@@ -84,7 +84,7 @@ const ColorPicker = () => {
 
   // Multi-part color picker for long sleeve model
   return (
-    <div className="absolute left-full ml-3 max-w-xs">
+    <div className="absolute left-full ml-1 max-w-xs top-0">
       <div className="bg-white rounded-lg shadow-lg p-4 border">
         {/* Header */}
         <div className="mb-4">
@@ -202,12 +202,7 @@ const ColorPicker = () => {
           width="100%"
         />
 
-        {/* Instructions */}
-        <div className="mt-3 text-xs text-gray-500 space-y-1">
-          <p>• Select parts to enable individual coloring</p>
-          <p>• Uncheck parts to use default model color</p>
-          <p>• Click on selected parts to change their color</p>
-        </div>
+        
       </div>
     </div>
   );

@@ -78,11 +78,26 @@ const LogoControlPanel = () => {
   return (
     <div className="absolute bottom-20 right-4 w-60 bg-white-700 p-3 rounded-lg shadow-lg z-50">
       {snap.activeFilterTab === "logoShirt" &&
-        renderControls("Center Logo", "logoCenterPosition", "logoCenterScale", "isLogoTexture")}
+        renderControls(
+          "Center Logo",
+          "logoCenterPosition",
+          "logoCenterScale",
+          "isLogoTexture"
+        )}
       {snap.activeFilterTab === "logoLeftShirt" &&
-        renderControls("Left Logo", "logoLeftPosition", "logoLeftScale", "isLogoLeftTexture")}
+        renderControls(
+          "Left Logo",
+          "logoLeftPosition",
+          "logoLeftScale",
+          "isLogoLeftTexture"
+        )}
       {snap.activeFilterTab === "logoRightShirt" &&
-        renderControls("Right Logo", "logoRightPosition", "logoRightScale", "isLogoRightTexture")}
+        renderControls(
+          "Right Logo",
+          "logoRightPosition",
+          "logoRightScale",
+          "isLogoRightTexture"
+        )}
     </div>
   );
 };
