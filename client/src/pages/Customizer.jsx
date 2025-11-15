@@ -33,6 +33,8 @@ const Customizer = () => {
   const [file, setFile] = useState('');
   const [prompt, setPrompt] = useState('');
   const [generatingImg, setGeneratingImg] = useState(false);
+  const [generatingSource, setGeneratingSource] = useState(null); // 'custom' or 'pollinations'
+  const [generationStatus, setGenerationStatus] = useState('');
 
   const [activeEditorTab, setActiveEditorTab] = useState('');
   const [showTextCustomizer, setShowTextCustomizer] = useState(false);
@@ -147,6 +149,8 @@ const Customizer = () => {
           prompt={prompt}
           setPrompt={setPrompt}
           generatingImg={generatingImg}
+          generatingSource={generatingSource}
+          generationStatus={generationStatus}
           handleSubmit={handleSubmit}
         />
       );
@@ -157,19 +161,67 @@ const Customizer = () => {
     }
   };
 
-  const handleSubmit = async (type) => {
+  const handleSubmit = async (type, source = 'pollinations') => {
     if (!prompt) return alert('Please enter a prompt');
     try {
       setGeneratingImg(true);
-      const encodedPrompt = encodeURIComponent(prompt);
-      const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}`;
-      handleDecals(type, imageUrl);
+      setGeneratingSource(source);
+      
+      if (source === 'custom') {
+        // Use local Flask API
+        setGenerationStatus('Connecting to model server...');
+        const API_URL = 'http://localhost:5001/generate/stream';
+        
+        setGenerationStatus('Loading model...');
+        const response = await fetch(API_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            prompt: prompt,
+            steps: 30,  // Faster generation
+            guidance_scale: 7.5,
+            height: 512,
+            width: 512,
+          }),
+        });
+        
+        if (!response.ok) {
+          throw new Error(`API error: ${response.status}`);
+        }
+        
+        setGenerationStatus('Generating image... This may take 10-30 seconds...');
+        const data = await response.json();
+        
+        if (data.success && data.image_base64) {
+          setGenerationStatus('Processing image...');
+          // Convert base64 to data URL
+          const imageUrl = `data:image/png;base64,${data.image_base64}`;
+          handleDecals(type, imageUrl);
+          setGenerationStatus('Complete!');
+        } else {
+          throw new Error(data.error || 'Image generation failed');
+        }
+      } else {
+        // Use pollinations.ai (original)
+        setGenerationStatus('Generating with Pollinations AI...');
+        const encodedPrompt = encodeURIComponent(prompt);
+        const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}`;
+        handleDecals(type, imageUrl);
+        setGenerationStatus('Complete!');
+      }
     } catch (error) {
-      alert('Image generation failed');
+      setGenerationStatus(`Error: ${error.message}`);
+      alert(`Image generation failed: ${error.message}`);
       console.error(error);
     } finally {
-      setGeneratingImg(false);
-      setActiveEditorTab('');
+      setTimeout(() => {
+        setGeneratingImg(false);
+        setGeneratingSource(null);
+        setGenerationStatus('');
+        setActiveEditorTab('');
+      }, 1000); // Small delay to show completion
     }
   };
 

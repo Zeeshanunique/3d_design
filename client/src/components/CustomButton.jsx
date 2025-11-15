@@ -4,7 +4,7 @@ import { useSnapshot } from 'valtio';
 import state from '../store';
 import { getContrastingColor } from '../config/helpers';
 
-const CustomButton = ({ type, title, customStyles, handleClick, isActive }) => {
+const CustomButton = ({ type, title, customStyles, handleClick, isActive, disabled }) => {
   const snap = useSnapshot(state);
 
   const generateStyle = (type) => {
@@ -27,6 +27,7 @@ const CustomButton = ({ type, title, customStyles, handleClick, isActive }) => {
       className={`px-2 py-1.5 flex-1 rounded-md transition ${customStyles}`}
       style={generateStyle(type)}
       onClick={handleClick}
+      disabled={disabled}
     >
       {title}
     </button>
