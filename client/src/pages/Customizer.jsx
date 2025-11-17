@@ -9,6 +9,7 @@ import { EditorTabs, FilterTabs, DecalTypes } from '../config/constants';
 import { fadeAnimation, slideAnimation } from '../config/motion';
 import { 
   AIPicker, 
+  AIModel,
   ColorPicker, 
   CustomButton, 
   FilePicker, 
@@ -35,6 +36,7 @@ const Customizer = () => {
   const [generatingImg, setGeneratingImg] = useState(false);
   const [generatingSource, setGeneratingSource] = useState(null); // 'custom' or 'pollinations'
   const [generationStatus, setGenerationStatus] = useState('');
+  const [generatedImage, setGeneratedImage] = useState(null); // Store generated image for AIModel tab
 
   const [activeEditorTab, setActiveEditorTab] = useState('');
   const [showTextCustomizer, setShowTextCustomizer] = useState(false);
@@ -100,8 +102,14 @@ const Customizer = () => {
   };
 
   const handleTabClick = (tabName) => {
-    setActiveEditorTab(prev => (prev === tabName ? '' : tabName));
+    const newTab = activeEditorTab === tabName ? '' : tabName;
+    setActiveEditorTab(newTab);
+    state.activeEditorTab = newTab; // Update global state
     setShowTextCustomizer(false);
+    // Clear generated image when switching away from aimodel tab
+    if (tabName !== 'aimodel' && activeEditorTab === 'aimodel') {
+      setGeneratedImage(null);
+    }
   };
 
   const activeFilterTab = {
@@ -154,6 +162,19 @@ const Customizer = () => {
           handleSubmit={handleSubmit}
         />
       );
+      case 'aimodel': return (
+        <AIModel
+          prompt={prompt}
+          setPrompt={setPrompt}
+          generatingImg={generatingImg}
+          generatingSource={generatingSource}
+          generationStatus={generationStatus}
+          generatedImage={generatedImage}
+          setGeneratedImage={setGeneratedImage}
+          handleSubmit={handleSubmit}
+          onApplyToModel={(imageUrl, type) => handleDecals(type, imageUrl)}
+        />
+      );
       case 'modelpicker': return <ModelPicker />;
       case 'patternpicker': 
         return <PatternPicker />;
@@ -198,9 +219,17 @@ const Customizer = () => {
           setGenerationStatus('Processing image...');
           // Convert base64 to data URL
           const imageUrl = `data:image/png;base64,${data.image_base64}`;
-          handleDecals(type, imageUrl);
+          console.log('Generated image URL length:', imageUrl.length);
+          console.log('Setting generated image...');
+          // Store the generated image for display in AIModel tab
+          setGeneratedImage(imageUrl);
           setGenerationStatus('Complete!');
+          // Small delay to show "Complete!" message before hiding loading
+          await new Promise(resolve => setTimeout(resolve, 500));
+          console.log('Image should now be visible');
+          // Don't automatically apply to 3D model - just display it
         } else {
+          console.error('API response error:', data);
           throw new Error(data.error || 'Image generation failed');
         }
       } else {
@@ -215,13 +244,26 @@ const Customizer = () => {
       setGenerationStatus(`Error: ${error.message}`);
       alert(`Image generation failed: ${error.message}`);
       console.error(error);
+      setGeneratingImg(false);
+      setGeneratingSource(null);
+      setGenerationStatus('');
     } finally {
-      setTimeout(() => {
-        setGeneratingImg(false);
-        setGeneratingSource(null);
-        setGenerationStatus('');
-        setActiveEditorTab('');
-      }, 1000); // Small delay to show completion
+      // Only reset generating state, don't close the tab for custom model
+      if (generatingSource !== 'custom') {
+        setTimeout(() => {
+          setGeneratingImg(false);
+          setGeneratingSource(null);
+          setGenerationStatus('');
+          setActiveEditorTab('');
+        }, 1000);
+      } else {
+        // For custom model, just stop generating but keep tab open
+        setTimeout(() => {
+          setGeneratingImg(false);
+          setGeneratingSource(null);
+          setGenerationStatus('');
+        }, 500);
+      }
     }
   };
 
@@ -748,7 +790,7 @@ const Customizer = () => {
           {/* LEFT SIDEBAR */}
           <motion.div 
             {...slideAnimation('left')}
-            className="w-28 bg-gray-100 border-r border-gray-300 flex flex-col items-center py-6 z-20"
+            className="w-28 bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col items-center py-6 z-20 shadow-sm"
           >
 
             {/* Editor Tabs - Scrollable */}
@@ -761,21 +803,38 @@ const Customizer = () => {
                       isActive={activeEditorTab === tab.name}
                       handleClick={() => handleTabClick(tab.name)}
                     />
-                    <span className="text-xs text-gray-600 mt-1 text-center font-medium">
-                      {tab.name.replace('picker', '').toUpperCase()}
+                    <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 text-center font-medium">
+                      {tab.name === 'aimodel' ? 'AI MODEL' : tab.name.replace('picker', '').toUpperCase()}
                     </span>
                   </div>
                 ))}
 
                 <div className="flex flex-col items-center">
-                  <CustomButton
-                    type="filled"
-                    title=""
-                    handleClick={() => setShowTextCustomizer(!showTextCustomizer)}
-                    customStyles="w-12 h-12 text-lg font-bold flex items-center justify-center"
+                  <div
+                    onClick={() => setShowTextCustomizer(!showTextCustomizer)}
+                    className={`
+                      w-14 h-14
+                      rounded-xl
+                      flex items-center justify-center
+                      cursor-pointer
+                      transition-all duration-200
+                      hover:scale-105 hover:shadow-md
+                      bg-white/80 dark:bg-gray-800/80
+                      border border-gray-200 dark:border-gray-700
+                      shadow-sm
+                      ${showTextCustomizer ? 'ring-2 ring-blue-500 bg-blue-50 dark:bg-blue-900/20' : ''}
+                    `}
                   >
-                    Aa
-                  </CustomButton>
+                    <svg 
+                      className={`w-6 h-6 ${showTextCustomizer ? 'text-blue-600 dark:text-blue-400' : 'text-gray-700 dark:text-gray-300'}`}
+                      fill="none" 
+                      stroke="currentColor" 
+                      viewBox="0 0 24 24"
+                      strokeWidth={showTextCustomizer ? 2.5 : 2}
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                  </div>
                   <span className="text-xs text-gray-600 mt-1 text-center font-medium">
                     TEXT
                   </span>
@@ -784,7 +843,7 @@ const Customizer = () => {
             </div>
 
             {/* Theme Selector - Fixed at Bottom */}
-            <div className="flex flex-col gap-2 mt-4 pt-4 border-t border-gray-300">
+            <div className="flex flex-col gap-2 mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
               {Object.keys(themes).map((theme) => (
                 <button
                   key={theme}
@@ -805,9 +864,7 @@ const Customizer = () => {
           </motion.div>
 
           {/* CANVAS AREA */}
-          <div className="flex-1 relative">
-            {/* Your 3D Canvas renders here */}
-            
+          <div className={`flex-1 relative ${activeEditorTab === 'aimodel' ? 'bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800' : ''}`}>
             {/* Floating Tab Content */}
             <AnimatePresence>
               {activeEditorTab && (
@@ -815,7 +872,7 @@ const Customizer = () => {
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
-                  className="absolute left-6 top-6 z-30 bg-white rounded-lg shadow-xl p-4"
+                  className="absolute left-6 top-6 z-30 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 p-4 backdrop-blur-sm"
                 >
                   {generateTabContent()}
                 </motion.div>
@@ -852,13 +909,15 @@ const Customizer = () => {
                   handleClick={() => handleActiveFilterTab(tab.name)}
                 />
               ))}
-            </motion.div>
+              </motion.div>
+            )}
 
             {/* Bottom Right - Logo Controls */}
-            <motion.div
-              className="absolute bottom-6 right-6 bg-white/90 backdrop-blur-sm p-3 rounded-xl shadow-lg flex gap-2"
-              {...fadeAnimation}
-            >
+            {activeEditorTab !== 'aimodel' && (
+              <motion.div
+                className="absolute bottom-6 right-6 bg-white/90 backdrop-blur-sm p-3 rounded-xl shadow-lg flex gap-2"
+                {...fadeAnimation}
+              >
               {["translate", "scale", "rotate"].map((mode) => (
                 <CustomButton
                   key={mode}
@@ -869,7 +928,8 @@ const Customizer = () => {
                   customStyles="text-xs font-bold"
                 />
               ))}
-            </motion.div>
+              </motion.div>
+            )}
 
             {/* Logo Control Panel */}
             {["logoShirt", "logoLeftShirt", "logoRightShirt"].includes(snap.activeFilterTab) && (

@@ -35,6 +35,7 @@ const state = proxy({
 
   // Which panel/tab is active
   activeFilterTab: null, // "logo" | "logoLeft" | "logoRight"
+  activeEditorTab: null, // Current editor tab (e.g., "aimodel", "aipicker", etc.)
   
   // center logo
   logoCenterPosition: [0, 0.04, 0.15],

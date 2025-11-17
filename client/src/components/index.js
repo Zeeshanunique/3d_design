@@ -1,5 +1,6 @@
 import CustomButton from "./CustomButton";
 import AIPicker from "./AIPicker";
+import AIModel from "./AIModel";
 import ColorPicker from "./ColorPicker";
 import FilePicker from "./FilePicker";
 import Tab from "./Tab";
@@ -15,6 +16,7 @@ import PatternPicker from "./PatternPicker";
 export {
   CustomButton,
   AIPicker,
+  AIModel,
   ColorPicker,
   FilePicker,
   Tab,

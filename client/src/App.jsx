@@ -13,7 +13,7 @@ import Designer2D from "./pages/Designer2D";
 function App() {
   const snap = useSnapshot(state);
 
-  const showCanvas = snap.page === "customizer";
+  const showCanvas = snap.page === "customizer" && snap.activeEditorTab !== "aimodel";
 
   return (
     

@@ -56,20 +56,6 @@ const AIPicker = ({ prompt, setPrompt, generatingImg, generatingSource, generati
               handleClick={() => handleSubmit('full', 'pollinations')}
               customStyles="text-xs"
             />
-
-            <CustomButton 
-              type="filled"
-              title="AI Custom (Logo)"
-              handleClick={() => handleSubmit('logo', 'custom')}
-              customStyles="text-xs bg-purple-500 hover:bg-purple-600"
-            />
-
-            <CustomButton 
-              type="filled"
-              title="AI Custom (Full)"
-              handleClick={() => handleSubmit('full', 'custom')}
-              customStyles="text-xs bg-purple-500 hover:bg-purple-600"
-            />
           </>
         )}
       </div>

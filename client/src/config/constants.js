@@ -1,25 +1,36 @@
 import { swatch, fileIcon, ai, logoShirt, stylishShirt } from "../assets";
 
+// Modern icon components will be passed directly in the component
 export const EditorTabs = [
   {
     name: "colorpicker",
-    icon: swatch,
+    icon: swatch, // Will be replaced with SVG in Tab component
+    iconType: "color",
   },
   {
     name: "filepicker",
     icon: fileIcon,
+    iconType: "file",
   },
   {
     name: "aipicker",
     icon: ai,
+    iconType: "ai",
+  },
+  {
+    name: "aimodel",
+    icon: ai,
+    iconType: "aimodel",
   },
   {
     name: "modelpicker",
     icon: fileIcon,
+    iconType: "model",
   },
   {
     name: "patternpicker",
     icon: fileIcon,
+    iconType: "pattern",
   },
 ];
 
