@@ -896,19 +896,20 @@ const Customizer = () => {
             )}
 
             {/* Bottom Center - Filter Tabs */}
-            <motion.div
-              className="absolute bottom-6 left-[37%] bg-white rounded-full shadow-lg px-4 py-2 flex items-center gap-2"
-              {...slideAnimation('up')}
-            >
-              {FilterTabs.map((tab) => (
-                <Tab
-                  key={tab.name}
-                  tab={tab}
-                  isFilterTab
-                  isActiveTab={activeFilterTab[tab.name]}
-                  handleClick={() => handleActiveFilterTab(tab.name)}
-                />
-              ))}
+            {activeEditorTab !== 'aimodel' && (
+              <motion.div
+                className="absolute bottom-6 left-[37%] bg-white rounded-full shadow-lg px-4 py-2 flex items-center gap-2"
+                {...slideAnimation('up')}
+              >
+                {FilterTabs.map((tab) => (
+                  <Tab
+                    key={tab.name}
+                    tab={tab}
+                    isFilterTab
+                    isActiveTab={activeFilterTab[tab.name]}
+                    handleClick={() => handleActiveFilterTab(tab.name)}
+                  />
+                ))}
               </motion.div>
             )}
 
