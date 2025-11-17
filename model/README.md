@@ -180,7 +180,7 @@ python generate.py \
 Start the Flask API server:
 
 ```bash
-python api.py
+python main.py
 ```
 
 The server will run on `http://localhost:5001` by default.
