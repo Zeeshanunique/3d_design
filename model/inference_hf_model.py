@@ -155,8 +155,8 @@ if __name__ == "__main__":
     parser.add_argument("--prompt", type=str, required=True, help="Text description of the image")
     parser.add_argument("--model_id", type=str, default=None, 
                        help="Hugging Face model ID (e.g., 'runwayml/stable-diffusion-v1-5')")
-    parser.add_argument("--model_path", type=str, default=None, 
-                       help="Local path to model directory")
+    parser.add_argument("--model_path", type=str, default=os.getenv("MODEL_PATH", None), 
+                       help="Local path to model directory (can also use MODEL_PATH env var)")
     parser.add_argument("--output_path", type=str, default="./outputs", help="Output directory")
     parser.add_argument("--steps", type=int, default=50, help="Number of inference steps")
     parser.add_argument("--guidance", type=float, default=7.5, help="Guidance scale")

@@ -13,8 +13,7 @@ app = Flask(__name__)
 CORS(app)
 
 # Configuration
-MODEL_ID = os.getenv("MODEL_ID", "runwayml/stable-diffusion-v1-5")  # Hugging Face model ID
-MODEL_PATH = os.getenv("MODEL_PATH", None)  # Local model path (optional, overrides MODEL_ID)
+MODEL_PATH = os.getenv("MODEL_PATH", "./models/clothes-diffusion")  # Local model path
 OUTPUT_DIR = os.getenv("OUTPUT_DIR", "./outputs")
 DEFAULT_STEPS = int(os.getenv("DEFAULT_STEPS", "30"))  # Reduced for faster generation
 DEFAULT_GUIDANCE = float(os.getenv("DEFAULT_GUIDANCE", "7.5"))
@@ -62,7 +61,7 @@ def generate():
         # Generate image using inference_hf_model
         image = generate_image(
             prompt=prompt,
-            model_id=MODEL_ID if not MODEL_PATH else None,
+            model_id=None,  # Use local model only
             model_path=MODEL_PATH,
             output_path=OUTPUT_DIR,
             num_inference_steps=steps,
@@ -130,7 +129,7 @@ def generate_stream():
         # Generate image using inference_hf_model
         image = generate_image(
             prompt=prompt,
-            model_id=MODEL_ID if not MODEL_PATH else None,
+            model_id=None,  # Use local model only
             model_path=MODEL_PATH,
             output_path=OUTPUT_DIR,
             num_inference_steps=steps,
@@ -160,9 +159,7 @@ if __name__ == "__main__":
     debug = os.getenv("DEBUG", "False").lower() == "true"
     
     print(f"Starting text-to-image API server on port {port}...")
-    print(f"Model ID: {MODEL_ID}")
-    if MODEL_PATH:
-        print(f"Model path: {MODEL_PATH}")
+    print(f"Model path: {MODEL_PATH}")
     print(f"Output directory: {OUTPUT_DIR}")
     
     app.run(host="0.0.0.0", port=port, debug=debug)
